@@ -3,13 +3,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 
-# Assuming the data path and column names setup
-data_path = r'C:\Users\vasea\Downloads\Naive-Bayes-SpamFiltering\spambase\spambase.data'
+# Fetch the dataset
+path = r'Project2-2/spambase/spambase.data'
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
 # Load the data
-df = pd.read_csv(data_path, header=None, names=column_names)
+df = pd.read_csv(path, header=None, names=column_names)
 
 # Split the data into features and target variable
 X = df.drop('label', axis=1)

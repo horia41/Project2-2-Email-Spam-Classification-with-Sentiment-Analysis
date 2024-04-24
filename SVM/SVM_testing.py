@@ -5,7 +5,8 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 
 # Load the dataset
-data_path = r'Project2-2/Bayes/spambase/spambase.data'
+data_path = r'Project2-2/spambase/spambase.data'
+
 column_names = [
     'word_freq_' + str(i) for i in range(1, 49)
 ] + [
