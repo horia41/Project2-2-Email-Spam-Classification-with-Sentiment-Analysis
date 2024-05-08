@@ -2,9 +2,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
+import pickle  # Import pickle for saving the model
 
 # Fetch the dataset
-path = r'Project2-2/spambase/spambase.data'
+path = 'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
@@ -38,3 +39,20 @@ print(f'Precision: {precision:.2f}')
 print(f'Recall: {recall:.2f}')
 print(f'F1 Score: {f1:.2f}')
 print(f'Confusion Matrix:\n{conf_matrix}')
+
+# Save the trained model to a file
+model_file_path = 'naive_bayes_model.pkl'
+with open(model_file_path, 'wb') as file:
+    pickle.dump(nb_classifier, file)
+print(f"Model saved to {model_file_path}")
+
+# Optionally: Load the model later to make predictions or further evaluation
+def load_model(path):
+    with open(path, 'rb') as file:
+        loaded_model = pickle.load(file)
+    return loaded_model
+
+# Example of loading the model and making a prediction
+loaded_model = load_model(model_file_path)
+new_predictions = loaded_model.predict(X_test)
+print("Loaded model predictions:", new_predictions[:5])
