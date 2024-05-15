@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
-import pickle  # Import pickle for saving the model
+import pickle
 
 # Fetch the dataset
 path = 'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
@@ -25,20 +25,37 @@ nb_classifier.fit(X_train, y_train)
 
 # Make predictions
 y_pred = nb_classifier.predict(X_test)
+y_pred_train = nb_classifier.predict(X_train)
 
-# Calculate metrics
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-conf_matrix = confusion_matrix(y_test, y_pred)
+# Calculate metrics for the test set,and training set , including accuracy, precision, recall, F1 score, and confusion matrix
+accuracy_test = accuracy_score(y_test, y_pred)
+precision_test = precision_score(y_test, y_pred)
+recall_test = recall_score(y_test, y_pred)
+f1_test = f1_score(y_test, y_pred)
+conf_matrix_test = confusion_matrix(y_test, y_pred)
 
-# Print the evaluation results
-print(f'Accuracy: {accuracy:.2f}')
-print(f'Precision: {precision:.2f}')
-print(f'Recall: {recall:.2f}')
-print(f'F1 Score: {f1:.2f}')
-print(f'Confusion Matrix:\n{conf_matrix}')
+accuracy_train = accuracy_score(y_train, y_pred_train)
+precision_train = precision_score(y_train, y_pred_train)
+recall_train = recall_score(y_train, y_pred_train)
+f1_train = f1_score(y_train, y_pred_train)
+conf_matrix_train = confusion_matrix(y_train, y_pred_train)
+
+
+# Print the evaluation results for the test set
+print("Test Set Metrics:")
+print(f'Accuracy: {accuracy_test:.2f}')
+print(f'Precision: {precision_test:.2f}')
+print(f'Recall: {recall_test:.2f}')
+print(f'F1 Score: {f1_test:.2f}')
+print(f'Confusion Matrix:\n{conf_matrix_test}')
+
+# Print the evaluation results for the training set
+print("Training Set Metrics:")
+print(f'Accuracy: {accuracy_train:.2f}')
+print(f'Precision: {precision_train:.2f}')
+print(f'Recall: {recall_train:.2f}')
+print(f'F1 Score: {f1_train:.2f}')
+print(f'Confusion Matrix:\n{conf_matrix_train}')
 
 # Save the trained model to a file
 model_file_path = 'naive_bayes_model.pkl'

@@ -3,20 +3,23 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
+import pickle
 
 # Load the dataset
-data_path = r'spambase/spambase.data'
+data_path = 'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
-column_names = [
-    'word_freq_' + str(i) for i in range(1, 49)
-] + [
-    'char_freq_' + str(i) for i in range(1, 7)
-] + [
-    'capital_run_length_average',
-    'capital_run_length_longest',
-    'capital_run_length_total',
-    'label'
-]
+    #column_names = [
+        #'word_freq_' + str(i) for i in range(1, 49)
+    #] + [
+        #'char_freq_' + str(i) for i in range(1, 7)
+    #] + [
+        #'capital_run_length_average',
+        #'capital_run_length_longest',
+        #'capital_run_length_total',
+        #'label'
+    #]
+
+column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
 df = pd.read_csv(data_path, header=None, names=column_names)
 
@@ -33,20 +36,55 @@ classifier.fit(X_train, y_train)
 
 # Make predictions
 y_pred = classifier.predict(X_test)
+y_pred_train = classifier.predict(X_train)
 
 
-# Calculate metrics
+# Calculate metrics for the test set and training set, including accuracy, precision, recall, F1 score, and confusion matrix
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred)
 recall = recall_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred)
 conf_matrix = confusion_matrix(y_test, y_pred)
 
-# Print the evaluation results
+accuracy_train = accuracy_score(y_train, y_pred_train)
+precision_train = precision_score(y_train, y_pred_train)
+recall_train = recall_score(y_train, y_pred_train)
+f1_train = f1_score(y_train, y_pred_train)
+conf_matrix_train = confusion_matrix(y_train, y_pred_train)
+
+
+# Print the evaluation results for the test set
+print("Test Set Metrics:")
 print(f'Accuracy : {accuracy:.2f}')
 print(f'Precision: {precision:.2f}')
 print(f'Recall: {recall:.2f}')
 print(f'F1 Score: {f1:.2f}')
 print(f'Confusion Matrix:\n{conf_matrix}')
 
+
+# Print the evaluation results for the training set
+print("Training Set Metrics:")
+print(f'Accuracy: {accuracy_train:.2f}')
+print(f'Precision: {precision_train:.2f}')
+print(f'Recall: {recall_train:.2f}')
+print(f'F1 Score: {f1_train:.2f}')
+print(f'Confusion Matrix:\n{conf_matrix_train}')
+
+# Save the trained model to a file
+model_file_path = 'SVM_model.pkl'
+with open(model_file_path, 'wb') as file:
+    pickle.dump(classifier, file)
+print(f"Model saved to {model_file_path}")
+
+# Optionally: Load the model later to make predictions or further evaluation
+def load_model(path):
+    with open(path, 'rb') as file:
+        loaded_model = pickle.load(file)
+    return loaded_model
+
+
+# Example of loading the model and making a prediction
+loaded_model = load_model(model_file_path)
+new_predictions = loaded_model.predict(X_test)
+print("Loaded model predictions:", new_predictions[:5])
 

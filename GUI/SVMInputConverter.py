@@ -27,6 +27,7 @@ def extract_features(email):
                  "labs", "telnet", "857", "data", "415", "85", "technology",
                  "1999", "parts", "pm", "direct", "cs", "meeting", "original",
                  "project", "re", "edu", "table", "conference"]
+
     word_freqs = {f"word_freq_{word}": 100 * words.count(word) / total_words for word in word_list}
 
     # Character frequency calculations
@@ -53,7 +54,7 @@ def extract_features(email):
 
 
 # Load the trained model
-def load_model(path='C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\Bayes\\naive_bayes_model.pkl'):
+def load_model(path='C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\SVM\\SVM_model.pkl'):
     with open(path, 'rb') as file:
         model = pickle.load(file)
     return model
@@ -74,7 +75,7 @@ def classify_email(email, model):
         return "Not Spam"
 
 # Example usage
-email_content = "International Women's Day is a special occasion for us at LEAN HQ. It's a day when we're reminded to celebrate strength, empowerment and beauty. All qualities we aim to embody here at LEAN! So to share the celebration with you all we're offering you7 DAYS FREE ACCESS TO LEAN WITH LILLY 📲You don't need a code. Just tap the button below and take advantage of our exclusive International Women's Day offer now 💕START YOUR FREE TRIAL NOW And in MORE good news, some of your favourite LEAN products have finally restocked!!!"  # This would be the email text you want to classify
+email_content = "Dear All, I’d like to invite you to our next meeting on Inclusivity in STEM and CS. Meeting notes will follow."  # This would be the email text you want to classify
 model = load_model()
 result = classify_email(email_content, model)
 print("The email is classified as:", result)
