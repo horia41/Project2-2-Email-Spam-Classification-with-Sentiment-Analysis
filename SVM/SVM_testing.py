@@ -5,7 +5,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 
 # Load the dataset
-data_path = r'Project2-2/spambase/spambase.data'
+data_path = r'spambase/spambase.data'
 
 column_names = [
     'word_freq_' + str(i) for i in range(1, 49)
@@ -48,54 +48,3 @@ print(f'Precision: {precision:.2f}')
 print(f'Recall: {recall:.2f}')
 print(f'F1 Score: {f1:.2f}')
 print(f'Confusion Matrix:\n{conf_matrix}')
-
-def text_to_features(text):
-    # Tokenize the text into words
-    words = text.lower().split()
-    
-    # Initialize feature vector with zeros
-    features = np.zeros(len(column_names) - 1)  # Exclude the label column
-    
-    # Define word frequency features
-    word_freq_features = [
-        'make', 'address', 'all', '3d', 'our', 'over', 'remove', 'internet', 'order', 'mail',
-        'receive', 'will', 'people', 'report', 'addresses', 'free', 'business', 'email', 'you',
-        'credit', 'your', 'font', '000', 'money', 'hp', 'hpl', 'george', '650', 'lab', 'labs',
-        'telnet', '857', 'data', '415', '85', 'technology', '1999', 'parts', 'pm', 'direct',
-        'cs', 'meeting', 'original', 'project', 're', 'edu', 'table', 'conference'
-    ]
-    
-    # Count word frequency in the text
-    for word in words:
-        if word in word_freq_features:
-            index = column_names.index('word_freq_' + word)
-            features[index] += 1
-    
-    # Define character frequency features
-    char_freq_features = [';', '(', '[', '!', '$', '#']
-    
-    # Count character frequency in the text
-    for char in text:
-        if char in char_freq_features:
-            index = column_names.index('char_freq_' + char)
-            features[index] += 1
-    
-    # Calculate capital run length features
-    capital_run_length_average = sum(1 for c in text if c.isupper()) / len(words)
-    capital_run_length_longest = max(sum(1 for c in word if c.isupper()) for word in words)
-    capital_run_length_total = sum(1 for c in text if c.isupper())
-    
-    # Append capital run length features
-    features[-3] = capital_run_length_average
-    features[-2] = capital_run_length_longest
-    features[-1] = capital_run_length_total
-    
-    return features
-
-# Example text
-text = "i dont know just for testing make make money all make.......!!"
-
-# Convert text to features
-text_features = text_to_features(text)
-
-print(text_features)
