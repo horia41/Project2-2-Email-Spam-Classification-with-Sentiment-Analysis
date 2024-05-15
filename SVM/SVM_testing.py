@@ -43,8 +43,10 @@ f1 = f1_score(y_test, y_pred)
 conf_matrix = confusion_matrix(y_test, y_pred)
 
 # Print the evaluation results
-print(f'Accuracy: {accuracy:.2f}')
+print(f'Accuracy : {accuracy:.2f}')
 print(f'Precision: {precision:.2f}')
 print(f'Recall: {recall:.2f}')
 print(f'F1 Score: {f1:.2f}')
 print(f'Confusion Matrix:\n{conf_matrix}')
+
+
