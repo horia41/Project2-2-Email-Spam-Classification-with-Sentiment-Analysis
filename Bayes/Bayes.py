@@ -5,7 +5,8 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, r
 import pickle
 
 # Fetch the dataset
-path = 'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
+path = 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
+    #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 

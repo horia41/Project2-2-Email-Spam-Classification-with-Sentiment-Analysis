@@ -1,12 +1,36 @@
-import pandas as pd
-from sklearn.naive_bayes import GaussianNB
+from flask import Flask, request, jsonify
 import pickle  # for loading/saving the model
 import re
 import pandas as pd
-from collections import Counter
+
+app = Flask(__name__)
+
+@app.route('/detect_spam', methods=['POST'])
+def detect_spam():
+    model_SVM = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\SVM\\SVM_model.pkl')
+    model_Bayes = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl')
+    data = request.get_json()
+    text = data['text']
+
+    spam_result_SVM = classify_email(text, model_SVM)
+    spam_result_Bayes = classify_email(text, model_Bayes)
 
 
-# Extract features from an email
+    return jsonify({'spam Bayes': spam_result_Bayes})
+
+def classify_email(email, model):
+    # Extract features from the email
+    features_df = extract_features(email)
+
+    # Predict using the trained model
+    prediction = model.predict(features_df)
+
+    # Interpret the prediction result
+    if prediction[0] == 1:
+        return 'Spam'
+    else:
+        return 'Not Spam'
+
 def extract_features(email):
     # Normalize the email text for consistent processing
     email_lower = email.lower()
@@ -51,31 +75,7 @@ def extract_features(email):
 
     return features_dataframe
 
-
-# Load the trained model
-def load_model(path= 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl'):
+def load_model(path):
     with open(path, 'rb') as file:
         model = pickle.load(file)
     return model
-
-
-# Classify an email as spam or not spam
-def classify_email(email, model):
-    # Extract features from the email
-    features_df = extract_features(email)
-
-    # Predict using the trained model
-    prediction = model.predict(features_df)
-
-    # Interpret the prediction result
-    if prediction[0] == 1:
-        return True
-    else:
-        return False
-
-# Example usage
-email_content = "International Women's Day is a special occasion for us at LEAN HQ. It's a day when we're reminded to celebrate strength, empowerment and beauty. All qualities we aim to embody here at LEAN! So to share the celebration with you all we're offering you7 DAYS FREE ACCESS TO LEAN WITH LILLY 📲You don't need a code. Just tap the button below and take advantage of our exclusive International Women's Day offer now 💕START YOUR FREE TRIAL NOW And in MORE good news, some of your favourite LEAN products have finally restocked!!!"  # This would be the email text you want to classify
-model = load_model()
-result = classify_email(email_content, model)
-print("The email is classified as:", result)
-

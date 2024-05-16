@@ -54,7 +54,7 @@ def extract_features(email):
 
 
 # Load the trained model
-def load_model(path='C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\SVM\\SVM_model.pkl'):
+def load_model(path='C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl'):
     with open(path, 'rb') as file:
         model = pickle.load(file)
     return model
@@ -70,9 +70,9 @@ def classify_email(email, model):
 
     # Interpret the prediction result
     if prediction[0] == 1:
-        return "Spam"
+        return True # Spam
     else:
-        return "Not Spam"
+        return False # no Spam
 
 # Example usage
 email_content = "Dear All, I’d like to invite you to our next meeting on Inclusivity in STEM and CS. Meeting notes will follow."  # This would be the email text you want to classify
