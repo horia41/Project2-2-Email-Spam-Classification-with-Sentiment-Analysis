@@ -1,99 +1,102 @@
 package GUI;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+public class TextInput extends BorderPane {
 
-public class TextInput extends Pane {
+    private final double WIDTH;
+    private final double HEIGHT;
 
-    static final int WIDTH = 1920;
-    static final int HEIGHT = 1080;
+    private static final Color BACKGROUND_COLOR = Color.web("#000000");
 
-    static final Color BACKGROUND_COLOR = Color.web("#000000");
+    public TextInput() {
+        // Get screen dimensions
+        WIDTH = Screen.getPrimary().getBounds().getWidth();
+        HEIGHT = Screen.getPrimary().getBounds().getHeight();
 
-
-    TextInput() {
         setBackground(Background.fill(BACKGROUND_COLOR));
-        //Logo Image
-        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
-        Logo.setRotate(-90);
-        Logo.setX(WIDTH - 350);
-        Logo.setY(HEIGHT - 200);
-        Logo.setPreserveRatio(true);
-        Logo.setFitWidth(300);
+
+        // Logo Image
+        ImageView logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
+        logo.setRotate(-90);
+        logo.setPreserveRatio(true);
+        logo.setFitWidth(300);
+
+        // Top panel with logo and buttons
+        Button homeButton = createHomeButton();
+        Button exitButton = createExitButton();
 
         // Text Area
         TextArea textArea = new TextArea();
         textArea.setPromptText("Enter your text here");
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        textArea.setStyle("-fx-font-size: 24px; " +
-                "-fx-font-family: Calibri; " +
-                "-fx-text-fill: black;");
+        textArea.setStyle("-fx-font-size: 16px; -fx-font-family: Calibri; -fx-text-fill: black;");
         textArea.setWrapText(true);
-        textArea.setPrefSize(WIDTH - 400, HEIGHT - 200);
 
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(textArea);
+        ScrollPane scrollPane = new ScrollPane(textArea);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
-        scrollPane.setLayoutX(50);
-        scrollPane.setLayoutY(50);
 
-        //Home and Exit Button
+        // Bottom panel with buttons
+        Button classifyButton = createClassifyButton(textArea);
+        Button clearTextButton = createClearTextButton(textArea);
+        Button insertFileButton = createInsertFileButton(textArea);
+
+        // Set layout positions
+        setTop(homeButton);
+        setCenter(scrollPane);
+        setBottom(insertFileButton);
+        setLeft(classifyButton);
+        setRight(clearTextButton);
+    }
+
+    private Button createHomeButton() {
         Button homeButton = new Button();
-        homeButton.setLayoutX(WIDTH - 250);
-        homeButton.setLayoutY(35);
         ImageView homeImage = new ImageView("file:GUI_java/src/GUI/resources/home22.png");
         homeImage.setPreserveRatio(true);
-        homeImage.setFitHeight(140);
+        homeImage.setFitHeight(40);
         homeButton.setGraphic(homeImage);
-        homeButton.setStyle("-fx-border-color: transparent;" +
-                "-fx-background-color: transparent;");
-        homeButton.setOnAction(event -> {
-            GUI_email.window.getScene().setRoot(new MainMenu());
-        });
+        homeButton.setStyle("-fx-border-color: transparent;" + "-fx-background-color: transparent;");
+        homeButton.setOnAction(event -> GUI_email.window.getScene().setRoot(new MainMenu()));
+        return homeButton;
+    }
 
-        Button exit = new Button();
-        exit.setLayoutX(WIDTH - 150);
-        exit.setLayoutY(50);
-        exit.setOnAction(e -> System.exit(0));
+    private Button createExitButton() {
+        Button exitButton = new Button();
         ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");
         exitImage.setPreserveRatio(true);
-        exitImage.setFitHeight(80);
-        exit.setGraphic(exitImage);
-        exit.setStyle("-fx-border-color: transparent;" +
-                "-fx-background-color: transparent;");
+        exitImage.setFitHeight(40);
+        exitButton.setGraphic(exitImage);
+        exitButton.setStyle("-fx-border-color: transparent;" + "-fx-background-color: transparent;");
+        exitButton.setOnAction(e -> System.exit(0));
+        return exitButton;
+    }
 
-        // Classify Button
+    private Button createClassifyButton(TextArea textArea) {
         Button classifyButton = new Button("CLASSIFY TEXT");
-        classifyButton.setStyle("-fx-font-size: 26px; " +
-                "-fx-font-family: Calibri; " +
-                "-fx-text-fill: white; " +
-                "-fx-background-color: black; " +
-                "-fx-border-color: white;");
-        classifyButton.setPrefWidth(200);
-        classifyButton.setLayoutX((WIDTH - 300));
-        classifyButton.setLayoutY(500);
-
+        classifyButton.setStyle("-fx-font-size: 20px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
         classifyButton.setOnAction(e -> {
-            //  TODO implement the sendRequest method
             String inputText = textArea.getText();
-            String urlString = "http://127.0.0.1:5000/detect_spam";  // SERVER LINK
+            String urlString = "http://127.0.0.1:5000/detect_spam"; // SERVER LINK
 
             String result = sendRequest(urlString, inputText);
-            //String result = sendRequest(inputText);
 
             if (result == null) {
                 System.out.println("Error: result is null");
@@ -102,38 +105,23 @@ public class TextInput extends Pane {
             System.out.println("Result from server: " + result);
             GUI_email.window.getScene().setRoot(new Analysis(inputText, result));
         });
+        return classifyButton;
+    }
 
+    private Button createClearTextButton(TextArea textArea) {
+        Button clearTextButton = new Button("CLEAR TEXT");
+        clearTextButton.setStyle("-fx-font-size: 20px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        clearTextButton.setOnAction(event -> textArea.clear());
+        return clearTextButton;
+    }
 
-        Button undoButton = new Button("CLEAR TEXT");
-        undoButton.setLayoutX((WIDTH - 300));
-        undoButton.setLayoutY(300);
-        undoButton.setStyle("-fx-font-size: 26px; " +
-                "-fx-font-family: Calibri; " +
-                "-fx-text-fill: white; " +
-                "-fx-background-color: black; " +
-                "-fx-border-color: white;");
-        undoButton.setPrefWidth(200);
-
-        undoButton.setOnAction(event -> {
-            textArea.clear();
-        });
-
+    private Button createInsertFileButton(TextArea textArea) {
         Button insertFileButton = new Button("INSERT FILE");
-        insertFileButton.setLayoutX(WIDTH - 300 );
-        insertFileButton.setLayoutY(400);
-        insertFileButton.setStyle("-fx-font-size: 26px; " +
-                "-fx-font-family: Calibri; " +
-                "-fx-text-fill: white; " +
-                "-fx-background-color: black; " +
-                "-fx-border-color: white;");
-        insertFileButton.setPrefWidth(200);
-
+        insertFileButton.setStyle("-fx-font-size: 20px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
         insertFileButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select Text File");
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Text Files", "*.txt")
-            );
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
             File selectedFile = fileChooser.showOpenDialog(null);
             if (selectedFile != null) {
                 try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
@@ -148,44 +136,7 @@ public class TextInput extends Pane {
                 }
             }
         });
-
-        getChildren().addAll(Logo, exit, classifyButton, scrollPane, insertFileButton, undoButton, homeButton);
-    }
-
-    //TODO implement the sendRequest method
-    private String sendRequest(String text) {
-        String jsonInputString = "{\"text\": \"" + text + "\"}";
-        try {
-            URL url = new URL("http://localhost:5000/detect_spam");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setDoOutput(true);
-
-            // Verifica si getOutputStream() devuelve un objeto OutputStream
-            if (con.getOutputStream() instanceof OutputStream) {
-                // Continúa con tu lógica aquí
-                try (OutputStream os = con.getOutputStream()) {
-                    byte[] input = jsonInputString.getBytes("utf-8");
-                    os.write(input, 0, input.length);
-                }
-            } else {
-                // Si getOutputStream() no devuelve un objeto OutputStream, maneja el caso de error aquí
-                System.out.println("Error: getOutputStream() no devolvió un objeto OutputStream");
-            }
-
-            // Lee la respuesta desde el servidor
-            try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(con.getInputStream(), "utf-8"))) {
-                // Lee la respuesta completa desde el InputStream
-                String response = br.readLine();
-                // Retorna la respuesta
-                return response;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Error sending request";
-        }
+        return insertFileButton;
     }
 
     private String sendRequest(String urlString, String textInput) {
@@ -194,42 +145,43 @@ public class TextInput extends Pane {
             URL url = new URL(urlString);
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "text/plain");
+            con.setRequestProperty("Content-Type", "application/json");
             con.setDoOutput(true);
 
-            // Enviar los datos de la solicitud
+            // Escape newline characters and send the request data
+            String jsonInputString = "{\"text\": \"" + textInput.replaceAll("\n", "\\\\n").replaceAll("\"", "\\\"") + "\"}";
+            System.out.println("Sending JSON payload: " + jsonInputString);
             try (OutputStream os = con.getOutputStream()) {
-                byte[] input = textInput.getBytes(StandardCharsets.UTF_8);
+                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
-            // Verificar si el código de respuesta es HTTP OK (200)
+            // Verify if the response code is HTTP OK (200)
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Leer la respuesta del servidor
+                // Read the response from the server
                 StringBuilder response = new StringBuilder();
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
                     String line;
                     while ((line = br.readLine()) != null) {
                         response.append(line.trim());
                     }
-                } catch (IOException e) {
-                    // Registrar información detallada si la lectura de la respuesta falla
-                    System.err.println("Error reading response from server: " + e.getMessage());
-                    e.printStackTrace();
                 }
                 return response.toString();
             } else {
+                // Read the error response from the server
+                StringBuilder errorResponse = new StringBuilder();
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        errorResponse.append(line.trim());
+                    }
+                }
                 System.err.println("Server returned HTTP response code: " + responseCode + " for URL: " + urlString);
-                return "Server error: " + responseCode;
+                System.err.println("Error response from server: " + errorResponse.toString());
+                return "Server error: " + responseCode + " - " + errorResponse.toString();
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("URL not found: " + urlString);
-            e.printStackTrace();
-            return "URL not found";
         } catch (IOException e) {
-            // Registrar información detallada si la solicitud falla
-            System.err.println("Error sending request to server: " + e.getMessage());
             e.printStackTrace();
             return "Error sending request";
         } finally {
@@ -238,6 +190,4 @@ public class TextInput extends Pane {
             }
         }
     }
-
 }
-
