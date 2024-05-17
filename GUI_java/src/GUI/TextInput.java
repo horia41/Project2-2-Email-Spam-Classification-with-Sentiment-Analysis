@@ -8,14 +8,11 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 
 public class TextInput extends Pane {
@@ -29,7 +26,7 @@ public class TextInput extends Pane {
     TextInput() {
         setBackground(Background.fill(BACKGROUND_COLOR));
         //Logo Image
-        ImageView Logo = new ImageView("file:GUI/resources/BackGround2.2.png");
+        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
         Logo.setRotate(-90);
         Logo.setX(WIDTH - 350);
         Logo.setY(HEIGHT - 200);
@@ -58,7 +55,7 @@ public class TextInput extends Pane {
         Button homeButton = new Button();
         homeButton.setLayoutX(WIDTH - 250);
         homeButton.setLayoutY(35);
-        ImageView homeImage = new ImageView("file:GUI/resources/home22.png");
+        ImageView homeImage = new ImageView("file:GUI_java/src/GUI/resources/home22.png");
         homeImage.setPreserveRatio(true);
         homeImage.setFitHeight(140);
         homeButton.setGraphic(homeImage);
@@ -72,7 +69,7 @@ public class TextInput extends Pane {
         exit.setLayoutX(WIDTH - 150);
         exit.setLayoutY(50);
         exit.setOnAction(e -> System.exit(0));
-        ImageView exitImage = new ImageView("file:GUI/resources/cross22.png");
+        ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");
         exitImage.setPreserveRatio(true);
         exitImage.setFitHeight(80);
         exit.setGraphic(exitImage);
@@ -89,12 +86,23 @@ public class TextInput extends Pane {
         classifyButton.setPrefWidth(200);
         classifyButton.setLayoutX((WIDTH - 300));
         classifyButton.setLayoutY(500);
+
         classifyButton.setOnAction(e -> {
+            //  TODO implement the sendRequest method
             String inputText = textArea.getText();
-            String result = sendRequest(inputText);
+            String urlString = "http://127.0.0.1:5000/detect_spam";  // SERVER LINK
+
+            String result = sendRequest(urlString, inputText);
+            //String result = sendRequest(inputText);
+
+            if (result == null) {
+                System.out.println("Error: result is null");
+                return;
+            }
             System.out.println("Result from server: " + result);
             GUI_email.window.getScene().setRoot(new Analysis(inputText, result));
         });
+
 
         Button undoButton = new Button("CLEAR TEXT");
         undoButton.setLayoutX((WIDTH - 300));
@@ -105,6 +113,7 @@ public class TextInput extends Pane {
                 "-fx-background-color: black; " +
                 "-fx-border-color: white;");
         undoButton.setPrefWidth(200);
+
         undoButton.setOnAction(event -> {
             textArea.clear();
         });
@@ -118,6 +127,7 @@ public class TextInput extends Pane {
                 "-fx-background-color: black; " +
                 "-fx-border-color: white;");
         insertFileButton.setPrefWidth(200);
+
         insertFileButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select Text File");
@@ -141,31 +151,93 @@ public class TextInput extends Pane {
 
         getChildren().addAll(Logo, exit, classifyButton, scrollPane, insertFileButton, undoButton, homeButton);
     }
+
+    //TODO implement the sendRequest method
     private String sendRequest(String text) {
+        String jsonInputString = "{\"text\": \"" + text + "\"}";
         try {
             URL url = new URL("http://localhost:5000/detect_spam");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
             con.setDoOutput(true);
-            String jsonInputString = "{\"text\": \"" + text + "\"}";
-            try (OutputStream os = con.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);
+
+            // Verifica si getOutputStream() devuelve un objeto OutputStream
+            if (con.getOutputStream() instanceof OutputStream) {
+                // Continúa con tu lógica aquí
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] input = jsonInputString.getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+            } else {
+                // Si getOutputStream() no devuelve un objeto OutputStream, maneja el caso de error aquí
+                System.out.println("Error: getOutputStream() no devolvió un objeto OutputStream");
             }
+
+            // Lee la respuesta desde el servidor
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(con.getInputStream(), "utf-8"))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine = null;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
-                }
-                return response.toString();
+                // Lee la respuesta completa desde el InputStream
+                String response = br.readLine();
+                // Retorna la respuesta
+                return response;
             }
         } catch (IOException e) {
             e.printStackTrace();
             return "Error sending request";
         }
     }
+
+    private String sendRequest(String urlString, String textInput) {
+        HttpURLConnection con = null;
+        try {
+            URL url = new URL(urlString);
+            con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "text/plain");
+            con.setDoOutput(true);
+
+            // Enviar los datos de la solicitud
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = textInput.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            // Verificar si el código de respuesta es HTTP OK (200)
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Leer la respuesta del servidor
+                StringBuilder response = new StringBuilder();
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line.trim());
+                    }
+                } catch (IOException e) {
+                    // Registrar información detallada si la lectura de la respuesta falla
+                    System.err.println("Error reading response from server: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                return response.toString();
+            } else {
+                System.err.println("Server returned HTTP response code: " + responseCode + " for URL: " + urlString);
+                return "Server error: " + responseCode;
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("URL not found: " + urlString);
+            e.printStackTrace();
+            return "URL not found";
+        } catch (IOException e) {
+            // Registrar información detallada si la solicitud falla
+            System.err.println("Error sending request to server: " + e.getMessage());
+            e.printStackTrace();
+            return "Error sending request";
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
+        }
+    }
+
 }
 

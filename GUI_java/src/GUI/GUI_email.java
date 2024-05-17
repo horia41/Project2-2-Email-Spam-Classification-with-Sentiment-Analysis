@@ -24,7 +24,6 @@ public class GUI_email extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-
         window = primaryStage;
         window.setWidth(WIDTH);
         window.setHeight(HEIGHT);
@@ -37,6 +36,8 @@ public class GUI_email extends Application {
         window.setScene(scene);
 
         window.show();
+
+
     }
 
     public static void main(String[] args) {

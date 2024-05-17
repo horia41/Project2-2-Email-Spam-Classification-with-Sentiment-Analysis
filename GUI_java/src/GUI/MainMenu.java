@@ -17,7 +17,7 @@ public class MainMenu extends Pane {
         setBackground(Background.fill((Color.web("#000000"))));
 
         Button start = new Button();
-        ImageView startImage = new ImageView("file:GUI/resources/start22.png");
+        ImageView startImage = new ImageView("file:GUI_java/src/GUI/resources/start22.png"); //path from repository root
         startImage.setPreserveRatio(true);
         startImage.setFitWidth(300);
         start.setGraphic(startImage);
@@ -36,14 +36,14 @@ public class MainMenu extends Pane {
         exit.setLayoutX(WIDTH - 150);
         exit.setLayoutY(50);
         exit.setOnAction(e -> System.exit(0));
-        ImageView exitImage = new ImageView("file:GUI/resources/cross22.png");
+        ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");//path from repository root
         exitImage.setPreserveRatio(true);
         exitImage.setFitHeight(150);
         exit.setGraphic(exitImage);
         exit.setStyle("-fx-border-color: transparent;"+
                 "-fx-background-color: black;");
 
-        ImageView Logo = new ImageView("file:GUI/resources/BackGround2.2.png");
+        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png"); //path from repository root
         Logo.setRotate(-90);
         Logo.setX(1920/2 - 650);
         Logo.setY(-200);
