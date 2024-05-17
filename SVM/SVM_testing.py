@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, r
 import pickle
 
 # Load the dataset
-data_path = 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
+data_path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
 
     #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
