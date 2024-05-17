@@ -6,14 +6,9 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, r
 from sklearn.feature_selection import SelectKBest, f_classif
 from imblearn.over_sampling import SMOTE
 import pickle
-import os
 
 # Fetch the dataset
-
-path = os.path.join('..', 'spambase', 'spambase.data')
-
-# path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
-
+path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
 # Load the data
@@ -86,19 +81,8 @@ print(f'Recall: {recall_train:.2f}')
 print(f'F1 Score: {f1_train:.2f}')
 print(f'Confusion Matrix:\n{conf_matrix_train}')
 
-# Save the trained model to a file
+# Save the trained model, feature selector, and scaler to a file
 model_file_path = 'naive_bayes_model.pkl'
 with open(model_file_path, 'wb') as file:
-    pickle.dump(best_nb_classifier, file)
+    pickle.dump((best_nb_classifier, selector, scaler), file)
 print(f"Model saved to {model_file_path}")
-
-# Optionally: Load the model later to make predictions or further evaluation
-def load_model(path):
-    with open(path, 'rb') as file:
-        loaded_model = pickle.load(file)
-    return loaded_model
-
-# Example of loading the model and making a prediction
-loaded_model = load_model(model_file_path)
-new_predictions = loaded_model.predict(X_test)
-print("Loaded model predictions:", new_predictions[:5])

@@ -7,14 +7,14 @@ import pickle
 import os
 
 # Load the dataset
-path = os.path.join('..', 'spambase', 'spambase.data')
-# data_path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
+#path = os.path.join('..', 'spambase', 'spambase.data')
+path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
 
     #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
 
     #column_names = [
-        #'word_freq_' + str(i) for i in range(1, 49)
+        #'word_freq_' + str(i) for i in range(1, 49) 
     #] + [
         #'char_freq_' + str(i) for i in range(1, 7)
     #] + [

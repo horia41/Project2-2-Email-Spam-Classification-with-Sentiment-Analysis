@@ -57,10 +57,10 @@ def extract_features(email):
 relative_path = os.path.join('..', 'SVM', 'SVM_model.pkl')
 
 
-# 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl'
+# 'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\SVM\SVM_model.pkl'
 
 # Load the trained model
-def load_model(path=relative_path):
+def load_model(path=r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\SVM\SVM_model.pkl'):
     with open(path, 'rb') as file:
         model = pickle.load(file)
     return model
