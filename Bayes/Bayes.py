@@ -11,6 +11,7 @@ import os
 #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
 relative_path = os.path.join('..', 'spambase', 'spambase.data')
+# dan pidar
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
