@@ -3,15 +3,19 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 import pickle
+import os
 
 # Fetch the dataset
-path = 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
-    #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
+#   path = 'D:\\project 2-2\\spambase\\spambase.data'
+#'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
+#'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
+
+relative_path = os.path.join('..', 'spambase', 'spambase.data')
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
 # Load the data
-df = pd.read_csv(path, header=None, names=column_names)
+df = pd.read_csv(relative_path, header=None, names=column_names)
 
 # Split the data into features and target variable
 X = df.drop('label', axis=1)

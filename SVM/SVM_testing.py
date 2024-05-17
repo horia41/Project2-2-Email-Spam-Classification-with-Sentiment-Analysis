@@ -4,9 +4,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 import pickle
+import os
 
 # Load the dataset
-data_path = 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
+relative_path = os.path.join('..', 'spambase', 'spambase.data')
+
+# data_path = 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
 
     #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
@@ -24,7 +27,7 @@ data_path = 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spamb
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
-df = pd.read_csv(data_path, header=None, names=column_names)
+df = pd.read_csv(relative_path, header=None, names=column_names)
 
 # Split the dataset into features and target variable
 X = df.drop('label', axis=1)
