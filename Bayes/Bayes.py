@@ -6,9 +6,14 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, r
 from sklearn.feature_selection import SelectKBest, f_classif
 from imblearn.over_sampling import SMOTE
 import pickle
+import os
 
 # Fetch the dataset
-path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
+
+path = os.path.join('..', 'spambase', 'spambase.data')
+
+# path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
+
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
 # Load the data
