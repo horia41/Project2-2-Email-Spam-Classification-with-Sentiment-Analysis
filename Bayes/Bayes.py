@@ -6,12 +6,12 @@ import pickle
 import os
 
 # Fetch the dataset
-#   path = 'D:\\project 2-2\\spambase\\spambase.data'
-#'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
-#'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
+# path = 'D:\\project 2-2\\spambase\\spambase.data'
+# 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\spambase\\spambase.data'
+# 'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
 
 relative_path = os.path.join('..', 'spambase', 'spambase.data')
-# dan pidar
+# esti chiar handicapat dan
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
@@ -46,7 +46,6 @@ recall_train = recall_score(y_train, y_pred_train)
 f1_train = f1_score(y_train, y_pred_train)
 conf_matrix_train = confusion_matrix(y_train, y_pred_train)
 
-
 # Print the evaluation results for the test set
 print("Test Set Metrics:")
 print(f'Accuracy: {accuracy_test:.2f}')
@@ -69,11 +68,13 @@ with open(model_file_path, 'wb') as file:
     pickle.dump(nb_classifier, file)
 print(f"Model saved to {model_file_path}")
 
+
 # Optionally: Load the model later to make predictions or further evaluation
 def load_model(path):
     with open(path, 'rb') as file:
         loaded_model = pickle.load(file)
     return loaded_model
+
 
 # Example of loading the model and making a prediction
 loaded_model = load_model(model_file_path)
