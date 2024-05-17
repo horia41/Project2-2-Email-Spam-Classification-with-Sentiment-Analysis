@@ -1,7 +1,7 @@
 ## Project 2-2 : Email Spam Classification with Sentiment Analysis
 
 # Description:
-This project is about the task of classifying an email as either spam or not spam.
+This project is about the task of classifying an email of classifying an email as either spam or not spam.
 
 The dataset used for this project is the 'Spambase' dataset from the UCI Machine Learning Repository. The dataset contains a total of 4601 emails, of which 1813 are spam emails and the rest are non-spam emails.
 
