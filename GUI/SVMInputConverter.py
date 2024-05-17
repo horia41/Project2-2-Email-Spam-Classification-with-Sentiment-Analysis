@@ -5,6 +5,7 @@ import re
 import pandas as pd
 from collections import Counter
 import os
+from pathlib import Path
 
 
 # Extract features from an email
@@ -54,13 +55,11 @@ def extract_features(email):
     return features_dataframe
 
 
-relative_path = os.path.join('..', 'SVM', 'SVM_model.pkl')
+# load saved model
+model_folder = Path(__file__).resolve().parent.parent / 'SVM'
+model_file = model_folder / 'SVM_model.pkl'
 
-
-# 'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\SVM\SVM_model.pkl'
-
-# Load the trained model
-def load_model(path=r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\SVM\SVM_model.pkl'):
+def load_model(path = model_file):
     with open(path, 'rb') as file:
         model = pickle.load(file)
     return model

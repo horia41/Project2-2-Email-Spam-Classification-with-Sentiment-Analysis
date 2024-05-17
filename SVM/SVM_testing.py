@@ -1,32 +1,17 @@
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 import pickle
-import os
+from pathlib import Path
 
 # Load the dataset
-#path = os.path.join('..', 'spambase', 'spambase.data')
-path = r'C:\Users\Dan Loznean\Documents\GitHub\Project2-2\spambase\spambase.data'
-
-    #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
-
-
-    #column_names = [
-        #'word_freq_' + str(i) for i in range(1, 49) 
-    #] + [
-        #'char_freq_' + str(i) for i in range(1, 7)
-    #] + [
-        #'capital_run_length_average',
-        #'capital_run_length_longest',
-        #'capital_run_length_total',
-        #'label'
-    #]
+data_folder = Path(__file__).resolve().parent.parent / 'spambase'
+data_file = data_folder / 'spambase.data'
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
-df = pd.read_csv(path, header=None, names=column_names)
+df = pd.read_csv(data_file, header=None, names=column_names)
 
 # Split the dataset into features and target variable
 X = df.drop('label', axis=1)

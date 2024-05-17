@@ -1,7 +1,7 @@
 import pandas as pd
 import pickle
 import re
-import os
+from pathlib import Path
 
 # Extract features from an email
 def extract_features(email):
@@ -36,8 +36,12 @@ def extract_features(email):
 
     return features_dataframe
 
+# load saved model
+model_folder = Path(__file__).resolve().parent.parent / 'Bayes'
+model_file = model_folder / 'naive_bayes_model.pkl'
+
 # Load the trained model, feature selector, and scaler
-def load_model(path='naive_bayes_model.pkl'):
+def load_model(path = model_file):
     with open(path, 'rb') as file:
         model, selector, scaler = pickle.load(file)
     return model, selector, scaler

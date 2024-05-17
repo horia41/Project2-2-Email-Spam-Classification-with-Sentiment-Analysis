@@ -2,26 +2,29 @@ from flask import Flask, request, jsonify
 import pickle  # for loading/saving the model
 import re
 import pandas as pd
-import os
+from pathlib import Path
 
 app = Flask(__name__)
 
+
 @app.route('/detect_spam', methods=['POST'])
 def detect_spam():
-    path_svm = os.path.join('..', 'SVM', 'SVM_model.pkl')
-    path_bayes = os.path.join('..', 'Bayes', 'naive_bayes_model.pkl')
-    # model_SVM = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\SVM\\SVM_model.pkl')
-    # model_Bayes = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl')
-    model_SVM = load_model(path_svm)
-    model_Bayes = load_model(path_bayes)
+    svm_folder = Path(__file__).resolve().parent.parent / 'SVM'
+    svm_file = svm_folder / 'SVM_model.pkl'
+    nb_folder = Path(__file__).resolve().parent.parent / 'Bayes'
+    nb_file = nb_folder / 'naive_bayes_model.pkl'
+
+    model_SVM = load_model(svm_file)
+    model_Bayes = load_model(nb_file)
+
     data = request.get_json()
     text = data['text']
 
     spam_result_SVM = classify_email(text, model_SVM)
     spam_result_Bayes = classify_email(text, model_Bayes)
 
+    return jsonify({'spam Bayes': spam_result_Bayes}, {'spam SVM': spam_result_SVM})
 
-    return jsonify({'spam Bayes': spam_result_Bayes})
 
 def classify_email(email, model):
     # Extract features from the email
@@ -35,6 +38,7 @@ def classify_email(email, model):
         return 'Spam'
     else:
         return 'Not Spam'
+
 
 def extract_features(email):
     # Normalize the email text for consistent processing
@@ -79,6 +83,7 @@ def extract_features(email):
     features_dataframe.columns = ['feature_' + str(i) for i in range(1, 58)]
 
     return features_dataframe
+
 
 def load_model(path):
     with open(path, 'rb') as file:
