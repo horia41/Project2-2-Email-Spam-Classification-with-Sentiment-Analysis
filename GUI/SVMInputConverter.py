@@ -4,6 +4,7 @@ import pickle  # for loading/saving the model
 import re
 import pandas as pd
 from collections import Counter
+import os
 
 
 # Extract features from an email
@@ -53,8 +54,13 @@ def extract_features(email):
     return features_dataframe
 
 
+relative_path = os.path.join('..', 'SVM', 'SVM_model.pkl')
+
+
+# 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl'
+
 # Load the trained model
-def load_model(path='C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl'):
+def load_model(path=relative_path):
     with open(path, 'rb') as file:
         model = pickle.load(file)
     return model
@@ -70,13 +76,13 @@ def classify_email(email, model):
 
     # Interpret the prediction result
     if prediction[0] == 1:
-        return True # Spam
+        return True  # Spam
     else:
-        return False # no Spam
+        return False  # no Spam
+
 
 # Example usage
 email_content = "Dear All, I’d like to invite you to our next meeting on Inclusivity in STEM and CS. Meeting notes will follow."  # This would be the email text you want to classify
 model = load_model()
 result = classify_email(email_content, model)
 print("The email is classified as:", result)
-

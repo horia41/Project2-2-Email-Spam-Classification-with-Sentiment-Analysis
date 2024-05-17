@@ -2,13 +2,18 @@ from flask import Flask, request, jsonify
 import pickle  # for loading/saving the model
 import re
 import pandas as pd
+import os
 
 app = Flask(__name__)
 
 @app.route('/detect_spam', methods=['POST'])
 def detect_spam():
-    model_SVM = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\SVM\\SVM_model.pkl')
-    model_Bayes = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl')
+    path_svm = os.path.join('..', 'SVM', 'SVM_model.pkl')
+    path_bayes = os.path.join('..', 'Bayes', 'naive_bayes_model.pkl')
+    # model_SVM = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\SVM\\SVM_model.pkl')
+    # model_Bayes = load_model('C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl')
+    model_SVM = load_model(path_svm)
+    model_Bayes = load_model(path_bayes)
     data = request.get_json()
     text = data['text']
 

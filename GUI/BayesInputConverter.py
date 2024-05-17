@@ -4,6 +4,7 @@ import pickle  # for loading/saving the model
 import re
 import pandas as pd
 from collections import Counter
+import os
 
 
 # Extract features from an email
@@ -51,9 +52,12 @@ def extract_features(email):
 
     return features_dataframe
 
+relative_path = os.path.join('..', 'Bayes', 'naive_bayes_model.pkl')
+
+# 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl'
 
 # Load the trained model
-def load_model(path= 'C:\\Users\\mespi\\OneDrive\\Escritorio\\Project2.2\\Bayes\\naive_bayes_model.pkl'):
+def load_model(path= relative_path) :
     with open(path, 'rb') as file:
         model = pickle.load(file)
     return model
