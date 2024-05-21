@@ -4,27 +4,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 import pickle
+from pathlib import Path
 
-# Load the dataset
-data_path = 'C:\\Users\\vasea\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
-
-    #'C:\\Users\\lauri\\OneDrive\\Documents\\GitHub\\Project2-2\\spambase\\spambase.data'
-
-
-    #column_names = [
-        #'word_freq_' + str(i) for i in range(1, 49)
-    #] + [
-        #'char_freq_' + str(i) for i in range(1, 7)
-    #] + [
-        #'capital_run_length_average',
-        #'capital_run_length_longest',
-        #'capital_run_length_total',
-        #'label'
-    #]
+# Fetch the dataset
+data_folder = Path(__file__).resolve().parent.parent / 'spambase'
+data_file = data_folder / 'spambase.data'
 
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
-df = pd.read_csv(data_path, header=None, names=column_names)
+df = pd.read_csv(data_file, header=None, names=column_names)
 
 # Split the dataset into features and target variable
 X = df.drop('label', axis=1)
@@ -90,4 +78,3 @@ def load_model(path):
 loaded_model = load_model(model_file_path)
 new_predictions = loaded_model.predict(X_test)
 print("Loaded model predictions:", new_predictions[:5])
-

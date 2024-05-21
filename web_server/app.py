@@ -3,6 +3,7 @@ import pickle
 import re
 import pandas as pd
 import logging
+from pathlib import Path
 
 app = Flask(__name__)
 
@@ -10,17 +11,22 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Load models
-model_SVM_path = 'C:\\Users\\vasea\\OneDrive\\Documents\\GitHub\\Project2-2\\SVM\\SVM_model.pkl'
-model_Bayes_path = 'C:\\Users\\vasea\\OneDrive\\Documents\\GitHub\\Project2-2\\Bayes\\naive_bayes_model.pkl'
+# # Load models
+# model_SVM_path = 'C:\\Users\\vasea\\OneDrive\\Documents\\GitHub\\Project2-2\\SVM\\SVM_model.pkl'
+# model_Bayes_path = 'C:\\Users\\vasea\\OneDrive\\Documents\\GitHub\\Project2-2\\Bayes\\naive_bayes_model.pkl'
 
 model_SVM = None
 model_Bayes = None
 
 def load_models():
     global model_SVM, model_Bayes
-    model_SVM = load_model(model_SVM_path)
-    model_Bayes = load_model(model_Bayes_path)
+    svm_folder = Path(__file__).resolve().parent.parent / 'SVM'
+    svm_file = svm_folder / 'SVM_model.pkl'
+    nb_folder = Path(__file__).resolve().parent.parent / 'Bayes'
+    nb_file = nb_folder / 'naive_bayes_model.pkl'
+
+    model_SVM = load_model(svm_file)
+    model_Bayes = load_model(nb_file)
     if not model_SVM or not model_Bayes:
         logger.error('Model loading failed')
         raise Exception('Model loading failed')
