@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Fetch the dataset
 data_folder = Path(__file__).resolve().parent.parent / 'spambase'
-data_file = data_folder / 'transformed_enron_spam_data.data'
+data_file = data_folder / 'spambase.data'
 column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
 
 # Load the data
@@ -40,7 +40,6 @@ precision_train = precision_score(y_train, y_pred_train)
 recall_train = recall_score(y_train, y_pred_train)
 f1_train = f1_score(y_train, y_pred_train)
 conf_matrix_train = confusion_matrix(y_train, y_pred_train)
-
 
 # Print the evaluation results for the test set
 print("Test Set Metrics:")
