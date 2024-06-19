@@ -8,8 +8,8 @@ import java.io.IOException;
 public class App {
     public static void main(String[] args) {
         // Start the Flask server
-        Thread flaskThread = new Thread(() -> startFlaskServer());
-        flaskThread.start();
+        //Thread flaskThread = new Thread(() -> startFlaskServer());
+        //flaskThread.start();
 
         // Launch the GUI
         GUI_email.main(args);

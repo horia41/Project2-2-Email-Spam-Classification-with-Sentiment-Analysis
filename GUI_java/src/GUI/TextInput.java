@@ -1,14 +1,5 @@
-package GUI;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.stage.Screen;
+package GUI;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,123 +11,147 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class TextInput extends BorderPane {
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
-    private final double WIDTH;
-    private final double HEIGHT;
+public class TextInput extends Pane {
+    static final int WIDTH = 1920;
+    static final int HEIGHT = 1080;
+    static final Color BACKGROUND_COLOR = Color.web("#000000");
 
-    private static final Color BACKGROUND_COLOR = Color.web("#000000");
+    TextInput() {
+        this.setBackground(Background.fill(BACKGROUND_COLOR));
 
-    public TextInput() {
-        // Get screen dimensions
-        WIDTH = Screen.getPrimary().getBounds().getWidth();
-        HEIGHT = Screen.getPrimary().getBounds().getHeight();
+        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
+        Logo.setRotate(-90.0);
+        Logo.setX(1570.0);
+        Logo.setY(880.0);
+        Logo.setPreserveRatio(true);
+        Logo.setFitWidth(300.0);
 
-        setBackground(Background.fill(BACKGROUND_COLOR));
 
-        // Logo Image
-        ImageView logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
-        logo.setRotate(-90);
-        logo.setPreserveRatio(true);
-        logo.setFitWidth(300);
-
-        // Top panel with logo and buttons
-        Button homeButton = createHomeButton();
-        Button exitButton = createExitButton();
-
-        // Text Area
         TextArea textArea = new TextArea();
         textArea.setPromptText("Enter your text here");
-        textArea.setStyle("-fx-font-size: 16px; -fx-font-family: Calibri; -fx-text-fill: black;");
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        textArea.setStyle("-fx-font-size: 24px; -fx-font-family: Calibri; -fx-text-fill: black;");
         textArea.setWrapText(true);
-
-        ScrollPane scrollPane = new ScrollPane(textArea);
+        textArea.setPrefSize(1520.0, 880.0);
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(textArea);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
+        scrollPane.setLayoutX(50.0);
+        scrollPane.setLayoutY(50.0);
 
-        // Bottom panel with buttons
-        Button classifyButton = createClassifyButton(textArea);
-        Button clearTextButton = createClearTextButton(textArea);
-        Button insertFileButton = createInsertFileButton(textArea);
 
-        // Set layout positions
-        setTop(homeButton);
-        setCenter(scrollPane);
-        setBottom(insertFileButton);
-        setLeft(classifyButton);
-        setRight(clearTextButton);
-    }
-
-    private Button createHomeButton() {
         Button homeButton = new Button();
+        homeButton.setLayoutX(1670.0);
+        homeButton.setLayoutY(35.0);
         ImageView homeImage = new ImageView("file:GUI_java/src/GUI/resources/home22.png");
         homeImage.setPreserveRatio(true);
-        homeImage.setFitHeight(40);
+        homeImage.setFitHeight(140.0);
         homeButton.setGraphic(homeImage);
-        homeButton.setStyle("-fx-border-color: transparent;" + "-fx-background-color: transparent;");
-        homeButton.setOnAction(event -> GUI_email.window.getScene().setRoot(new MainMenu()));
-        return homeButton;
-    }
+        homeButton.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+        homeButton.setOnAction((event) -> {
+            GUI_email.window.getScene().setRoot(new MainMenu());
+        });
 
-    private Button createExitButton() {
-        Button exitButton = new Button();
+
+        Button exit = new Button();
+        exit.setLayoutX(1770.0);
+        exit.setLayoutY(50.0);
+        exit.setOnAction((e) -> {
+            System.exit(0);
+        });
         ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");
         exitImage.setPreserveRatio(true);
-        exitImage.setFitHeight(40);
-        exitButton.setGraphic(exitImage);
-        exitButton.setStyle("-fx-border-color: transparent;" + "-fx-background-color: transparent;");
-        exitButton.setOnAction(e -> System.exit(0));
-        return exitButton;
-    }
+        exitImage.setFitHeight(80.0);
+        exit.setGraphic(exitImage);
+        exit.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
 
-    private Button createClassifyButton(TextArea textArea) {
+
         Button classifyButton = new Button("CLASSIFY TEXT");
-        classifyButton.setStyle("-fx-font-size: 20px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
-        classifyButton.setOnAction(e -> {
+        classifyButton.setStyle("-fx-font-size: 26px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        classifyButton.setPrefWidth(200.0);
+        classifyButton.setLayoutX(1620.0);
+        classifyButton.setLayoutY(500.0);
+        classifyButton.setOnAction((e) -> {
             String inputText = textArea.getText();
+            if(inputText.isEmpty()) {
+                System.out.println("Text area is empty");
+                return;
+            }
             String urlString = "http://127.0.0.1:5000/detect_spam"; // SERVER LINK
 
             String result = sendRequest(urlString, inputText);
-
-            if (result == null) {
-                System.out.println("Error: result is null");
-                return;
-            }
             System.out.println("Result from server: " + result);
             GUI_email.window.getScene().setRoot(new Analysis(inputText, result));
         });
-        return classifyButton;
-    }
 
-    private Button createClearTextButton(TextArea textArea) {
-        Button clearTextButton = new Button("CLEAR TEXT");
-        clearTextButton.setStyle("-fx-font-size: 20px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
-        clearTextButton.setOnAction(event -> textArea.clear());
-        return clearTextButton;
-    }
 
-    private Button createInsertFileButton(TextArea textArea) {
+        Button undoButton = new Button("CLEAR TEXT");
+        undoButton.setLayoutX(1620.0);
+        undoButton.setLayoutY(300.0);
+        undoButton.setStyle("-fx-font-size: 26px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        undoButton.setPrefWidth(200.0);
+        undoButton.setOnAction((event) -> {
+            textArea.clear();
+        });
+
+
         Button insertFileButton = new Button("INSERT FILE");
-        insertFileButton.setStyle("-fx-font-size: 20px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
-        insertFileButton.setOnAction(event -> {
+        insertFileButton.setLayoutX(1620.0);
+        insertFileButton.setLayoutY(400.0);
+        insertFileButton.setStyle("-fx-font-size: 26px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        insertFileButton.setPrefWidth(200.0);
+        insertFileButton.setOnAction((event) -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select Text File");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-            File selectedFile = fileChooser.showOpenDialog(null);
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter[]{new FileChooser.ExtensionFilter("Text Files", new String[]{"*.txt"})});
+            File selectedFile = fileChooser.showOpenDialog((Window)null);
             if (selectedFile != null) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
-                    StringBuilder content = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        content.append(line).append("\n");
+                try {
+                    BufferedReader reader = new BufferedReader(new FileReader(selectedFile));
+
+                    try {
+                        StringBuilder content = new StringBuilder();
+
+                        while(true) {
+                            String line;
+                            if ((line = reader.readLine()) == null) {
+                                textArea.appendText(content.toString());
+                                break;
+                            }
+
+                            content.append(line).append("\n");
+                        }
+                    } catch (Throwable var8) {
+                        try {
+                            reader.close();
+                        } catch (Throwable var7) {
+                            var8.addSuppressed(var7);
+                        }
+
+                        throw var8;
                     }
-                    textArea.appendText(content.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                    reader.close();
+                } catch (IOException var9) {
+                    var9.printStackTrace();
                 }
             }
+
         });
-        return insertFileButton;
+        this.getChildren().addAll(new Node[]{Logo, exit, classifyButton, scrollPane, insertFileButton, undoButton, homeButton});
     }
 
     private String sendRequest(String urlString, String textInput) {
