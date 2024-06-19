@@ -1,52 +1,49 @@
 import pandas as pd
-import pickle
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
+import pickle
 from pathlib import Path
-import warnings
 
-# Suppress warnings related to feature names
-warnings.filterwarnings('ignore', category=UserWarning, module='sklearn')
-
-# Function to load the pre-trained Naive Bayes model
-def load_model(model_path):
-    with open(model_path, 'rb') as file:
-        model = pickle.load(file)
-    return model
-
-
-# Fetch the dataset
-data_folder = Path(__file__).resolve().parent.parent / 'spambase'
-data_file = data_folder / 'transformed_spam_data.data' # Change this to test a dataset
-
-# load saved model
+# Load the TfidfVectorizer
 model_folder = Path(__file__).resolve().parent.parent / 'Models'
-model_file = model_folder / 'SVM_model.pkl' # Change this to test the pretrained model you want
+vectorizer_file = model_folder / 'tfidf_vectorizer2.pkl'
+with open(vectorizer_file, 'rb') as file:
+    tfidf_vectorizer = pickle.load(file)
 
-# Column names for the dataset
-column_names = ['feature_' + str(i) for i in range(1, 58)] + ['label']
+# Load the trained model
+model_file_path = model_folder / 'best_svm_model.pkl'
+with open(model_file_path, 'rb') as file:
+    model = pickle.load(file)
 
-# Load the data
-df = pd.read_csv(data_file, header=None, names=column_names)
+# Load the new data
+data_folder = Path(__file__).resolve().parent.parent / 'spambase'
+new_data_file = data_folder / 'processed_data4.data'  # Change this to your new data file path
+new_data = pd.read_csv(new_data_file, header=None, names=['Message', 'Category'])
 
-# Split the data into features and target variable
-X = df.drop('label', axis=1)
-y = df['label']
+# Ensure there are no NaN values
+new_data['Message'] = new_data['Message'].fillna('')
 
-# Load the pre-trained model
-model = load_model(model_file)
+# Transform the new data using the loaded TfidfVectorizer
+X_new = new_data['Message']
+X_new_transformed = tfidf_vectorizer.transform(X_new)
 
-# Make predictions
-y_pred = model.predict(X)
+# Predict the labels for the new data
+y_pred_new = model.predict(X_new_transformed)
 
-# Calculate metrics for the dataset
-accuracy = accuracy_score(y, y_pred)
-precision = precision_score(y, y_pred)
-recall = recall_score(y, y_pred)
-f1 = f1_score(y, y_pred)
-conf_matrix = confusion_matrix(y, y_pred)
+# Map 'ham' to 0 and 'spam' to 1 for numerical labels for evaluation
+label_mapping = {'ham': 0, 'spam': 1}
+reverse_label_mapping = {v: k for k, v in label_mapping.items()}
+new_data['Category'] = new_data['Category'].map(label_mapping)
 
-# Print the evaluation results
-print("Evaluation Metrics for the Entire Dataset:")
+# Calculate metrics for the new data
+y_true = new_data['Category']
+accuracy = accuracy_score(y_true, y_pred_new)
+precision = precision_score(y_true, y_pred_new)
+recall = recall_score(y_true, y_pred_new)
+f1 = f1_score(y_true, y_pred_new)
+conf_matrix = confusion_matrix(y_true, y_pred_new)
+
+# Print the evaluation results for the new data
+print("New Data Metrics:")
 print(f'Accuracy: {accuracy:.2f}')
 print(f'Precision: {precision:.2f}')
 print(f'Recall: {recall:.2f}')

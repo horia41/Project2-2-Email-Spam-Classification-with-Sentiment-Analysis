@@ -1,37 +1,46 @@
 package GUI;
 
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.stage.Screen;
 
-public class MainMenu extends BorderPane {
+public class MainMenu extends Pane {
+    static final int WIDTH = 1920;
+    static final int HEIGHT = 1080;
 
-    private final double WIDTH;
-    private final double HEIGHT;
-
-    private static final Color BACKGROUND_COLOR = Color.web("#000000");
-
-    public MainMenu() {
-        // Get screen dimensions
-        WIDTH = Screen.getPrimary().getBounds().getWidth();
-        HEIGHT = Screen.getPrimary().getBounds().getHeight();
-
-        setBackground(Background.fill(BACKGROUND_COLOR));
-
-        // Start Button
-        Button startButton = new Button();
+    MainMenu() {
+        this.setBackground(Background.fill(Color.web("#000000")));
+        Button start = new Button();
         ImageView startImage = new ImageView("file:GUI_java/src/GUI/resources/start22.png");
         startImage.setPreserveRatio(true);
-        startImage.setFitWidth(300);
-        startButton.setGraphic(startImage);
-        startButton.setStyle("-fx-border-color: transparent;" + "-fx-background-color: transparent;");
-        startButton.setOnAction(event -> GUI_email.window.getScene().setRoot(new TextInput()));
-
-        // Center the Start Button
-        setCenter(startButton);
+        startImage.setFitWidth(300.0);
+        start.setGraphic(startImage);
+        start.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+        start.setLayoutX(810.0);
+        start.setLayoutY(680.0);
+        start.setOnAction((event) -> {
+            GUI_email.window.getScene().setRoot(new TextInput());
+        });
+        Button exit = new Button();
+        exit.setLayoutX(1770.0);
+        exit.setLayoutY(50.0);
+        exit.setOnAction((e) -> {
+            System.exit(0);
+        });
+        ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");
+        exitImage.setPreserveRatio(true);
+        exitImage.setFitHeight(150.0);
+        exit.setGraphic(exitImage);
+        exit.setStyle("-fx-border-color: transparent;-fx-background-color: black;");
+        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
+        Logo.setRotate(-90.0);
+        Logo.setX(310.0);
+        Logo.setY(-200.0);
+        Logo.setPreserveRatio(true);
+        Logo.setFitWidth(1300.0);
+        this.getChildren().addAll(new Node[]{start, exit, Logo});
     }
 }

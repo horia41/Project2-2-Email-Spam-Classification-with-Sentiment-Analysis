@@ -4,6 +4,9 @@ import re
 import pandas as pd
 import logging
 from pathlib import Path
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
 
 app = Flask(__name__)
 
@@ -11,23 +14,22 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# # Load models
-# model_SVM_path = 'C:\\Users\\vasea\\OneDrive\\Documents\\GitHub\\Project2-2\\SVM\\SVM_model.pkl'
-# model_Bayes_path = 'C:\\Users\\vasea\\OneDrive\\Documents\\GitHub\\Project2-2\\Bayes\\naive_bayes_model.pkl'
-
 model_SVM = None
 model_Bayes = None
+tfidf_vectorizer = None
 
 def load_models():
-    global model_SVM, model_Bayes
-    svm_folder = Path(__file__).resolve().parent.parent / 'SVM'
-    svm_file = svm_folder / 'SVM_model.pkl'
-    nb_folder = Path(__file__).resolve().parent.parent / 'Bayes'
-    nb_file = nb_folder / 'naive_bayes_model.pkl'
+    global model_SVM, model_Bayes, tfidf_vectorizer
+    svm_folder = Path(__file__).resolve().parent.parent / 'Models'
+    svm_file = svm_folder / 'best_bayes_model.pkl'
+    nb_folder = Path(__file__).resolve().parent.parent / 'Models'
+    nb_file = nb_folder / 'best_svm_model.pkl'
+    vectorizer_file = svm_folder / 'tfidf_vectorizer1.pkl'
 
     model_SVM = load_model(svm_file)
     model_Bayes = load_model(nb_file)
-    if not model_SVM or not model_Bayes:
+    tfidf_vectorizer = load_model(vectorizer_file)
+    if not model_SVM or not model_Bayes or not tfidf_vectorizer:
         logger.error('Model loading failed')
         raise Exception('Model loading failed')
 
@@ -65,40 +67,48 @@ def detect_spam():
         return jsonify({'error': 'Internal Server Error', 'message': str(e)}), 500
 
 def classify_email(email, model):
-    features_df = extract_features(email)
-    prediction = model.predict(features_df)
+    # Preprocess the email using the new preprocess_email function
+    preprocessed_email = preprocess_email(email)
+    email_vectorized = tfidf_vectorizer.transform([preprocessed_email])
+    prediction = model.predict(email_vectorized)
     return 'Spam' if prediction[0] == 1 else 'Not Spam'
 
-def extract_features(email):
-    email_lower = email.lower()
-    capital_runs = re.findall(r'[A-Z]+', email)
-    run_lengths = [len(run) for run in capital_runs] if capital_runs else [0]
-    words = re.findall(r'\b\w+\b', email_lower)
-    total_words = len(words) if words else 1
-
-    word_list = ["make", "address", "all", "3d", "our", "over", "remove",
-                 "internet", "order", "mail", "receive", "will", "people", "report",
-                 "addresses", "free", "business", "email", "you", "credit", "your",
-                 "font", "000", "money", "hp", "hpl", "george", "650", "lab",
-                 "labs", "telnet", "857", "data", "415", "85", "technology",
-                 "1999", "parts", "pm", "direct", "cs", "meeting", "original",
-                 "project", "re", "edu", "table", "conference"]
-    word_freqs = {f"word_freq_{word}": 100 * words.count(word) / total_words for word in word_list}
-
-    char_freqs = {f"char_freq_{char}": 100 * email_lower.count(char) / len(email_lower)
-                  for char in [';', '(', '[', '!', '$', '#']}
-
-    capital_run_features = {
-        "capital_run_length_average": sum(run_lengths) / len(run_lengths) if run_lengths else 0,
-        "capital_run_length_longest": max(run_lengths) if run_lengths else 0,
-        "capital_run_length_total": sum(run_lengths)
-    }
-
-    features = {**word_freqs, **char_freqs, **capital_run_features}
-    features_dataframe = pd.DataFrame([features])
-    features_dataframe.columns = ['feature_' + str(i) for i in range(1, 58)]
-
-    return features_dataframe
+def preprocess_email(text):
+    if not isinstance(text, str):
+        return ''
+    
+    # Convert to lowercase
+    text = text.lower()
+    
+    # Remove HTML tags
+    text = re.sub(r'<.*?>', '', text)
+    
+    # Remove URLs
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    
+    # Remove email addresses
+    text = re.sub(r'\S*@\S*\s?', '', text)
+    
+    # Remove punctuation
+    text = re.sub(r'[^\w\s]', '', text)
+    
+    # Remove numbers
+    text = re.sub(r'\d+', '', text)
+    
+    # Tokenization
+    tokens = word_tokenize(text)
+    
+    # Remove stop words
+    tokens = [word for word in tokens if word not in stopwords.words('english')]
+    
+    # Stemming
+    stemmer = PorterStemmer()
+    tokens = [stemmer.stem(word) for word in tokens]
+    
+    # Rejoin tokens into a single string
+    text = ' '.join(tokens)
+    
+    return text
 
 def load_model(path):
     try:
