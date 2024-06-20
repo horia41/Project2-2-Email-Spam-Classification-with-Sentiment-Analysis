@@ -6,47 +6,50 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+
 def preprocess_email(text):
     if not isinstance(text, str):
         return ''
-    
+
     # Convert to lowercase
     text = text.lower()
-    
+
     # Remove HTML tags
     text = re.sub(r'<.*?>', '', text)
-    
+
     # Remove URLs
     text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
-    
+
     # Remove email addresses
     text = re.sub(r'\S*@\S*\s?', '', text)
-    
+
     # Remove punctuation
     text = re.sub(r'[^\w\s]', '', text)
-    
+
     # Remove numbers
     text = re.sub(r'\d+', '', text)
-    
+
     # Tokenization
     tokens = word_tokenize(text)
-    
+
     # Remove stop words
     tokens = [word for word in tokens if word not in stopwords.words('english')]
-    
+
     # Stemming
     stemmer = PorterStemmer()
     tokens = [stemmer.stem(word) for word in tokens]
-    
+
     # Rejoin tokens into a single string
     text = ' '.join(tokens)
-    
+
     return text
+
 
 def analyze_sentiment(text):
     analyzer = SentimentIntensityAnalyzer()
     sentiment_scores = analyzer.polarity_scores(text)
     return sentiment_scores
+
 
 def load_and_preprocess_data(file_path):
     # Determine the file format based on the file name
@@ -74,7 +77,7 @@ def load_and_preprocess_data(file_path):
         df = pd.read_csv(file_path, header=None, names=column_names)
         df['Category'] = df['label'].map({1: 'spam', 0: 'ham'})
         df['Message'] = df.apply(lambda row: ' '.join(row.drop('label').astype(str)), axis=1)
-    
+
     else:
         raise ValueError(f"Unsupported file: {file_name}")
 
@@ -94,14 +97,16 @@ def load_and_preprocess_data(file_path):
     # Return the preprocessed data
     return df[['Message', 'sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'Category']]
 
+
 def save_preprocessed_data(df, output_file_path):
     df.to_csv(output_file_path, index=False, header=False)
     print(f"Processed data saved to {output_file_path}")
 
+
 # Fetch the dataset
 data_folder = Path(__file__).resolve().parent.parent / 'spambase'
-data_file = data_folder / 'enron_spam_data.csv'  # Ensure this points to the correct processed data file
+data_file = data_folder / 'spam_or_not_spam.csv'  # Ensure this points to the correct processed data file
 
 df = load_and_preprocess_data(data_file)
-output_file = data_folder / 'processed_data_with_sentiment.data'
+output_file = data_folder / 'processed_data3_with_sentiment.data'
 save_preprocessed_data(df, output_file)

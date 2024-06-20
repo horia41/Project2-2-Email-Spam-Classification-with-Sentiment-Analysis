@@ -9,9 +9,11 @@ import pickle
 from pathlib import Path
 import time
 
+# VADER Sentiment Analysis. VADER (Valence Aware Dictionary and sEntiment Reasoner) is a lexicon and rule-based sentiment analysis tool that is specifically attuned to sentiments expressed in social media, and works well on texts from other domains.
+
 # Load the processed data with sentiment features
 data_folder = Path(__file__).resolve().parent.parent / 'spambase'
-processed_data_file = data_folder / 'processed_data_with_sentiment.data'
+processed_data_file = data_folder / 'enron_processed_with_sentiment_shifted.data'
 processed_data = pd.read_csv(processed_data_file, header=None, names=['Message', 'sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'Category'])
 
 # Ensure there are no NaN values
@@ -105,7 +107,7 @@ print(f'F1 Score: {f1_train:.2f}')
 print(f'Confusion Matrix:\n{conf_matrix_train}')
 
 # Save the trained model to a file
-model_file_path = model_folder / 'best_svm_model_with_sentiment.pkl'
+model_file_path = model_folder / 'best_svm_with_sentiment.pkl'
 with open(model_file_path, 'wb') as file:
     pickle.dump(best_model, file)
 print(f"Model saved to {model_file_path}")

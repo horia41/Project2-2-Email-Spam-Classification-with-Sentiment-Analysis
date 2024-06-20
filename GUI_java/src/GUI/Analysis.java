@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 
+import java.util.Arrays;
+
 public class Analysis extends Pane {
 
 
@@ -63,9 +65,9 @@ public class Analysis extends Pane {
         //Text input
         Text text = new Text(textInput);
         text.setWrappingWidth(MAX_TEXT_WIDTH);
-        text.setStyle("-fx-font-size: 50px; -fx-font-family: Calibri; -fx-text-fill: white;");
+        text.setStyle("-fx-font-size: 30px; -fx-font-family: Calibri; -fx-text-fill: white;");
         text.setLayoutX(100.0);
-        text.setLayoutY(500.0);
+        text.setLayoutY(650.0);
         text.setWrappingWidth(MAX_TEXT_WIDTH);
         text.setFill(Color.WHITE);
 
@@ -79,15 +81,23 @@ public class Analysis extends Pane {
         resultSVM.setLayoutY(200.0);
 
         Text resultNB = new Text("Naive Bayes: " + results[0]);
-        System.out.println(results[0]);
+        //System.out.println(results[0]);
         resultNB.setWrappingWidth(MAX_TEXT_WIDTH);
         resultNB.setStyle("-fx-font-size: 100px; -fx-font-family: Calibri; -fx-text-fill: white;");
         resultNB.setFill(Color.WHITE);
         resultNB.setLayoutX(100.0);
         resultNB.setLayoutY(350.0);
 
-        // Add all elements to the Pane
-        getChildren().addAll(new Node[]{homeButton, exit, text, resultSVM, resultNB, Logo});
+        Text sentimentScore = new Text("Sentiment Score: " + results[2]);
+        //System.out.println(results[2]);
+        sentimentScore.setWrappingWidth(MAX_TEXT_WIDTH);
+        sentimentScore.setStyle("-fx-font-size: 100px; -fx-font-family: Calibri; -fx-text-fill: white;");
+        sentimentScore.setFill(Color.WHITE);
+        sentimentScore.setLayoutX(100.0);
+        sentimentScore.setLayoutY(500.0);
+
+
+        getChildren().addAll(new Node[]{homeButton, exit, text, resultSVM, resultNB,sentimentScore, Logo});
     }
 
     private String[] getresult(String result) {
@@ -96,9 +106,14 @@ public class Analysis extends Pane {
         String[] parts = result.split(",");
         String spamBayes = "";
         String spamSVM = "";
+        String sentimentScore = "";
 
-        for (String part : parts) {
+        System.out.println(Arrays.toString(parts));
+
+        for (String part : parts)
+        {
             String[] keyValue = part.split(":");
+            System.out.println(Arrays.toString(keyValue));
             if (keyValue.length == 2) {
                 String key = keyValue[0].trim();
                 String value = keyValue[1].trim();
@@ -108,8 +123,14 @@ public class Analysis extends Pane {
                     spamSVM = value;
                 }
             }
-        }
+            else if (keyValue.length == 3)
+            {
+               sentimentScore = keyValue[keyValue.length-1].trim();
+            }
 
-        return new String[]{spamBayes, spamSVM};
+        }
+        //System.out.print(spamBayes + " " + spamSVM + " " + sentimentScore);
+
+        return new String[]{spamBayes, spamSVM, sentimentScore};
     }
 }

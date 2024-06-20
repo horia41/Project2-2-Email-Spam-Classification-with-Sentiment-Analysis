@@ -98,7 +98,7 @@ print(f'F1 Score: {f1_train:.2f}')
 print(f'Confusion Matrix:\n{conf_matrix_train}')
 
 # Save the trained model to a file
-model_file_path = model_folder / 'best_model.pkl'
+model_file_path = model_folder / 'best_bayes_model.pkl'
 with open(model_file_path, 'wb') as file:
     pickle.dump(best_model, file)
 print(f"Model saved to {model_file_path}")

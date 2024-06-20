@@ -7,6 +7,8 @@ from pathlib import Path
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import scipy.sparse as sp
 
 app = Flask(__name__)
 
@@ -17,13 +19,14 @@ logger = logging.getLogger(__name__)
 model_SVM = None
 model_Bayes = None
 tfidf_vectorizer = None
+sentiment_analyzer = SentimentIntensityAnalyzer()
 
 def load_models():
     global model_SVM, model_Bayes, tfidf_vectorizer
     svm_folder = Path(__file__).resolve().parent.parent / 'Models'
-    svm_file = svm_folder / 'best_bayes_model.pkl'
+    svm_file = svm_folder / 'best_svm_with_sentiment.pkl'  # updated model file name
     nb_folder = Path(__file__).resolve().parent.parent / 'Models'
-    nb_file = nb_folder / 'best_svm_model.pkl'
+    nb_file = nb_folder / 'best_bayes_with_sentiment.pkl'  # updated model file name
     vectorizer_file = svm_folder / 'tfidf_vectorizer1.pkl'
 
     model_SVM = load_model(svm_file)
@@ -32,6 +35,43 @@ def load_models():
     if not model_SVM or not model_Bayes or not tfidf_vectorizer:
         logger.error('Model loading failed')
         raise Exception('Model loading failed')
+
+def preprocess_text(text):
+    if not isinstance(text, str):
+        return ''
+
+    # Convert to lowercase
+    text = text.lower()
+
+    # Remove HTML tags
+    text = re.sub(r'<.*?>', '', text)
+
+    # Remove URLs
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+
+    # Remove email addresses
+    text = re.sub(r'\S*@\S*\s?', '', text)
+
+    # Remove punctuation
+    text = re.sub(r'[^\w\s]', '', text)
+
+    # Remove numbers
+    text = re.sub(r'\d+', '', text)
+
+    # Tokenization
+    tokens = word_tokenize(text)
+
+    # Remove stop words
+    tokens = [word for word in tokens if word not in stopwords.words('english')]
+
+    # Stemming
+    stemmer = PorterStemmer()
+    tokens = [stemmer.stem(word) for word in tokens]
+
+    # Rejoin tokens into a single string
+    text = ' '.join(tokens)
+
+    return text
 
 @app.route('/detect_spam', methods=['POST'])
 def detect_spam():
@@ -55,60 +95,59 @@ def detect_spam():
 
         logger.info(f"Received text: {text}")
 
-        spam_result_SVM = classify_email(text, model_SVM)
-        spam_result_Bayes = classify_email(text, model_Bayes)
+        # Preprocess text
+        preprocessed_text = preprocess_text(text)
+
+        # Sentiment analysis
+        sentiment_scores = get_sentiment_scores(preprocessed_text)
+
+        # Classification
+        spam_result_SVM = classify_email(preprocessed_text, model_SVM)
+        spam_result_Bayes = classify_email(preprocessed_text, model_Bayes)
 
         logger.info(f"SVM Result: {spam_result_SVM}")
         logger.info(f"Bayes Result: {spam_result_Bayes}")
+        logger.info(f"Sentiment Scores: {sentiment_scores}")
 
-        return jsonify({'spam_Bayes': spam_result_Bayes, 'spam_SVM': spam_result_SVM})
+        return jsonify({
+            'spam_Bayes': spam_result_Bayes,
+            'spam_SVM': spam_result_SVM,
+            'sentiment_scores': sentiment_scores
+        })
     except Exception as e:
         logger.error(f"Error processing request: {e}", exc_info=True)
         return jsonify({'error': 'Internal Server Error', 'message': str(e)}), 500
 
 def classify_email(email, model):
-    # Preprocess the email using the new preprocess_email function
-    preprocessed_email = preprocess_email(email)
-    email_vectorized = tfidf_vectorizer.transform([preprocessed_email])
-    prediction = model.predict(email_vectorized)
+    email_vectorized = tfidf_vectorizer.transform([email])
+
+    # Get sentiment features
+    sentiment_features = get_sentiment_features(email)
+    sentiment_features_df = pd.DataFrame([sentiment_features])
+
+    # Combine TF-IDF and sentiment features
+    email_combined = sp.hstack((email_vectorized, sentiment_features_df))
+
+    prediction = model.predict(email_combined)
     return 'Spam' if prediction[0] == 1 else 'Not Spam'
 
-def preprocess_email(text):
-    if not isinstance(text, str):
-        return ''
-    
-    # Convert to lowercase
-    text = text.lower()
-    
-    # Remove HTML tags
-    text = re.sub(r'<.*?>', '', text)
-    
-    # Remove URLs
-    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
-    
-    # Remove email addresses
-    text = re.sub(r'\S*@\S*\s?', '', text)
-    
-    # Remove punctuation
-    text = re.sub(r'[^\w\s]', '', text)
-    
-    # Remove numbers
-    text = re.sub(r'\d+', '', text)
-    
-    # Tokenization
-    tokens = word_tokenize(text)
-    
-    # Remove stop words
-    tokens = [word for word in tokens if word not in stopwords.words('english')]
-    
-    # Stemming
-    stemmer = PorterStemmer()
-    tokens = [stemmer.stem(word) for word in tokens]
-    
-    # Rejoin tokens into a single string
-    text = ' '.join(tokens)
-    
-    return text
+def get_sentiment_scores(text):
+    sentiment_scores = sentiment_analyzer.polarity_scores(text)
+    return {
+        'negative': sentiment_scores['neg'],
+        'neutral': sentiment_scores['neu'],
+        'positive': sentiment_scores['pos'],
+        'compound': sentiment_scores['compound']
+    }
+
+def get_sentiment_features(text):
+    sentiment_scores = sentiment_analyzer.polarity_scores(text)
+    return [
+        sentiment_scores['neg'],
+        sentiment_scores['neu'],
+        sentiment_scores['pos'],
+        sentiment_scores['compound']
+    ]
 
 def load_model(path):
     try:
