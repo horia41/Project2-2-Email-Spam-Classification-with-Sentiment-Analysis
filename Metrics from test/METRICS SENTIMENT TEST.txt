@@ -1,0 +1,64 @@
+NAIVE BAYES WITH SENTIMENT
+
+PROCESSED DATA 1 WITH SENTIMENT SHIFTED
+Accuracy: 0.38
+Precision: 0.17
+Recall: 0.89
+F1 Score: 0.28
+Confusion Matrix:
+[[1450 3375]
+ [  80  667]]
+
+
+PROCESSED DATA 2 WITH SENTIMENT SHIFTED
+Accuracy: 0.38
+Precision: 0.17
+Recall: 0.89
+F1 Score: 0.28
+Confusion Matrix:
+[[1450 3375]
+ [  80  667]]
+
+
+PROCESSED DATA 3 WITH SENTIMENT SHIFTED
+Accuracy: 0.39
+Precision: 0.21
+Recall: 0.98
+F1 Score: 0.35
+Confusion Matrix:
+[[ 685 1815]
+ [  11  489]]
+
+
+
+SVM WITH SENTIMENT
+
+PROCESSED DATA 1 WITH SENTIMENT SHIFTED
+Accuracy: 0.31
+Precision: 0.15
+Recall: 0.89
+F1 Score: 0.26
+Confusion Matrix:
+[[1060 3765]
+ [  81  666]]
+
+
+PROCESSED DATA 2 WITH SENTIMENT SHIFTED
+Accuracy: 0.31
+Precision: 0.15
+Recall: 0.89
+F1 Score: 0.26
+Confusion Matrix:
+[[1060 3765]
+ [  81  666]]
+
+
+PROCESSED DATA 3 WITH SENTIMENT SHIFTED
+Accuracy: 0.72
+Precision: 0.36
+Recall: 0.87
+F1 Score: 0.51
+Confusion Matrix:
+[[1720  780]
+ [  66  434]]
+
