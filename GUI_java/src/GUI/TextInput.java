@@ -66,17 +66,14 @@ public class TextInput extends Pane {
         });
 
 
-        Button exit = new Button();
-        exit.setLayoutX(1770.0);
-        exit.setLayoutY(50.0);
+        Button exit = new Button("x");
+        exit.setLayoutX(1720.0);
+        exit.setLayoutY(4.0);
         exit.setOnAction((e) -> {
             System.exit(0);
         });
-        ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");
-        exitImage.setPreserveRatio(true);
-        exitImage.setFitHeight(80.0);
-        exit.setGraphic(exitImage);
-        exit.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+        exit.setStyle("-fx-font-size: 94px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: transparent;");
+
 
 
         Button classifyButton = new Button("CLASSIFY TEXT");

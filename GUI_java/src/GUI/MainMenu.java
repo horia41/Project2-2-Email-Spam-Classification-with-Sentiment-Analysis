@@ -13,34 +13,40 @@ public class MainMenu extends Pane {
 
     MainMenu() {
         this.setBackground(Background.fill(Color.web("#000000")));
-        Button start = new Button();
-        ImageView startImage = new ImageView("file:GUI_java/src/GUI/resources/start22.png");
-        startImage.setPreserveRatio(true);
-        startImage.setFitWidth(300.0);
-        start.setGraphic(startImage);
-        start.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
-        start.setLayoutX(810.0);
-        start.setLayoutY(680.0);
+
+        Button start = new Button("Start");
+        start.setStyle("-fx-font-size: 60px; -fx-font-family: 'Calibri Light'; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        start.setLayoutX(850.0);
+        start.setLayoutY(575.0);
         start.setOnAction((event) -> {
             GUI_email.window.getScene().setRoot(new TextInput());
         });
-        Button exit = new Button();
-        exit.setLayoutX(1770.0);
-        exit.setLayoutY(50.0);
+
+        Button exit = new Button("x");
+        exit.setLayoutX(1760.0);
+        exit.setLayoutY(-15);
         exit.setOnAction((e) -> {
             System.exit(0);
         });
-        ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");
-        exitImage.setPreserveRatio(true);
-        exitImage.setFitHeight(150.0);
-        exit.setGraphic(exitImage);
-        exit.setStyle("-fx-border-color: transparent;-fx-background-color: black;");
-        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
-        Logo.setRotate(-90.0);
-        Logo.setX(310.0);
-        Logo.setY(-200.0);
-        Logo.setPreserveRatio(true);
-        Logo.setFitWidth(1300.0);
-        this.getChildren().addAll(new Node[]{start, exit, Logo});
+        exit.setStyle("-fx-font-size: 94px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: transparent;");
+
+        ImageView background = new ImageView("file:GUI_java/src/GUI/resources/homeScreen.png");
+        background.setX(0);
+        background.setPreserveRatio(true);
+        background.setFitWidth(1920.0);
+
+        Button info = new Button();
+        info.setLayoutX(30);
+        info.setLayoutY(30);
+        ImageView homeImage = new ImageView("file:GUI_java/src/GUI/resources/info.jpg");
+        homeImage.setPreserveRatio(true);
+        homeImage.setFitHeight(80);
+        info.setGraphic(homeImage);
+        info.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+        info.setOnAction((event) -> {
+            GUI_email.window.getScene().setRoot(new Info());
+        });
+
+        this.getChildren().addAll(new Node[]{background, info, start, exit});
     }
 }

@@ -49,17 +49,14 @@ public class Analysis extends Pane {
         });
 
         // Exit Button
-        Button exit = new Button();
-        exit.setLayoutX(1770.0);
-        exit.setLayoutY(50.0);
-        ImageView exitImage = new ImageView("file:GUI_java/src/GUI/resources/cross22.png");
-        exitImage.setPreserveRatio(true);
-        exitImage.setFitHeight(100.0);
-        exit.setGraphic(exitImage);
-        exit.setStyle("-fx-border-color: transparent;-fx-background-color: transparent;");
+        Button exit = new Button("x");
+        exit.setLayoutX(1720.0);
+        exit.setLayoutY(4.0);
         exit.setOnAction((e) -> {
             System.exit(0);
         });
+        exit.setStyle("-fx-font-size: 94px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: transparent;");
+
 
 
         //Text input
@@ -97,7 +94,7 @@ public class Analysis extends Pane {
         sentimentScore.setLayoutY(500.0);
 
 
-        getChildren().addAll(new Node[]{homeButton, exit, text, resultSVM, resultNB,sentimentScore, Logo});
+        getChildren().addAll(new Node[]{exit, homeButton, text, resultSVM, resultNB,sentimentScore, Logo});
     }
 
     private String[] getresult(String result) {
