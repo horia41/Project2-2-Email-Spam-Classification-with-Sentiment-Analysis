@@ -1,6 +1,7 @@
 package GUI;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.Node;
@@ -27,13 +28,6 @@ public class Analysis extends Pane {
 
         this.setBackground(Background.fill(BACKGROUND_COLOR));
 
-        // Logo Image
-        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
-        Logo.setRotate(-90.0);
-        Logo.setX(1570.0);
-        Logo.setY(880.0);
-        Logo.setPreserveRatio(true);
-        Logo.setFitWidth(300.0);
 
         // Home Button
         Button homeButton = new Button();
@@ -58,21 +52,26 @@ public class Analysis extends Pane {
         exit.setStyle("-fx-font-size: 94px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: transparent;");
 
 
-
         //Text input
         Text text = new Text(textInput);
-        text.setWrappingWidth(MAX_TEXT_WIDTH);
-        text.setStyle("-fx-font-size: 30px; -fx-font-family: Calibri; -fx-text-fill: white;");
-        text.setLayoutX(100.0);
-        text.setLayoutY(650.0);
-        text.setWrappingWidth(MAX_TEXT_WIDTH);
+        text.setWrappingWidth(1700); // Slightly less than the ScrollPane width
+        text.setStyle("-fx-font-size: 35px; -fx-font-family: Calibri; -fx-text-fill: white;");
         text.setFill(Color.WHITE);
+
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(text);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setPrefSize(1920, 1080); // Set a preferred size for the ScrollPane
+        scrollPane.setLayoutX(100.0);
+        scrollPane.setLayoutY(550.0); // Adjusted Y position
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         // Text Display
         String[] results = getresult(result);
         Text resultSVM = new Text("SVM: " + results[1]);
         resultSVM.setWrappingWidth(MAX_TEXT_WIDTH);
-        resultSVM.setStyle("-fx-font-size: 100px; -fx-font-family: Calibri; -fx-text-fill: white;");
+        resultSVM.setStyle("-fx-font-size: 70px; -fx-font-family: Calibri; -fx-text-fill: white;");
         resultSVM.setFill(Color.WHITE);
         resultSVM.setLayoutX(100.0);
         resultSVM.setLayoutY(200.0);
@@ -80,7 +79,7 @@ public class Analysis extends Pane {
         Text resultNB = new Text("Naive Bayes: " + results[0]);
         //System.out.println(results[0]);
         resultNB.setWrappingWidth(MAX_TEXT_WIDTH);
-        resultNB.setStyle("-fx-font-size: 100px; -fx-font-family: Calibri; -fx-text-fill: white;");
+        resultNB.setStyle("-fx-font-size: 70px; -fx-font-family: Calibri; -fx-text-fill: white;");
         resultNB.setFill(Color.WHITE);
         resultNB.setLayoutX(100.0);
         resultNB.setLayoutY(350.0);
@@ -88,13 +87,13 @@ public class Analysis extends Pane {
         Text sentimentScore = new Text("Sentiment Score: " + results[2]);
         //System.out.println(results[2]);
         sentimentScore.setWrappingWidth(MAX_TEXT_WIDTH);
-        sentimentScore.setStyle("-fx-font-size: 100px; -fx-font-family: Calibri; -fx-text-fill: white;");
+        sentimentScore.setStyle("-fx-font-size: 70px; -fx-font-family: Calibri; -fx-text-fill: white;");
         sentimentScore.setFill(Color.WHITE);
         sentimentScore.setLayoutX(100.0);
         sentimentScore.setLayoutY(500.0);
 
 
-        getChildren().addAll(new Node[]{exit, homeButton, text, resultSVM, resultNB,sentimentScore, Logo});
+        getChildren().addAll(new Node[]{exit, homeButton, scrollPane, resultSVM, resultNB,sentimentScore});
     }
 
     private String[] getresult(String result) {

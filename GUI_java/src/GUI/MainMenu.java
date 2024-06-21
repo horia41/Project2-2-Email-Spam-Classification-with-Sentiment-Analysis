@@ -2,10 +2,12 @@ package GUI;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class MainMenu extends Pane {
     static final int WIDTH = 1920;
@@ -46,7 +48,6 @@ public class MainMenu extends Pane {
         info.setOnAction((event) -> {
             GUI_email.window.getScene().setRoot(new Info());
         });
-
         this.getChildren().addAll(new Node[]{background, info, start, exit});
     }
 }

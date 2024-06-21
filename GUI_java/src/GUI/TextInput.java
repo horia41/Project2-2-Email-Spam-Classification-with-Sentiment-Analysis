@@ -1,14 +1,8 @@
 
 package GUI;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 import javafx.scene.Node;
@@ -25,18 +19,11 @@ import javafx.stage.Window;
 public class TextInput extends Pane {
     static final int WIDTH = 1920;
     static final int HEIGHT = 1080;
+    static final int PrefWidth =220;
     static final Color BACKGROUND_COLOR = Color.web("#000000");
 
     TextInput() {
         this.setBackground(Background.fill(BACKGROUND_COLOR));
-
-        ImageView Logo = new ImageView("file:GUI_java/src/GUI/resources/BackGround2.2.png");
-        Logo.setRotate(-90.0);
-        Logo.setX(1570.0);
-        Logo.setY(880.0);
-        Logo.setPreserveRatio(true);
-        Logo.setFitWidth(300.0);
-
 
         TextArea textArea = new TextArea();
         textArea.setPromptText("Enter your text here");
@@ -76,11 +63,11 @@ public class TextInput extends Pane {
 
 
 
-        Button classifyButton = new Button("CLASSIFY TEXT");
-        classifyButton.setStyle("-fx-font-size: 26px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
-        classifyButton.setPrefWidth(200.0);
+        Button classifyButton = new Button("CLASSIFY");
+        classifyButton.setStyle("-fx-font-size: 36px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        classifyButton.setPrefWidth(PrefWidth);
         classifyButton.setLayoutX(1620.0);
-        classifyButton.setLayoutY(500.0);
+        classifyButton.setLayoutY(860.0);
         classifyButton.setOnAction((e) -> {
             String inputText = textArea.getText();
             if(inputText.isEmpty()) {
@@ -95,21 +82,20 @@ public class TextInput extends Pane {
         });
 
 
-        Button undoButton = new Button("CLEAR TEXT");
-        undoButton.setLayoutX(1620.0);
-        undoButton.setLayoutY(300.0);
-        undoButton.setStyle("-fx-font-size: 26px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
-        undoButton.setPrefWidth(200.0);
-        undoButton.setOnAction((event) -> {
+        Button clearText = new Button("CLEAR TEXT");
+        clearText.setLayoutX(1620.0);
+        clearText.setLayoutY(500.0);
+        clearText.setStyle("-fx-font-size: 26px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        clearText.setPrefWidth(PrefWidth);
+        clearText.setOnAction((event) -> {
             textArea.clear();
         });
-
 
         Button insertFileButton = new Button("INSERT FILE");
         insertFileButton.setLayoutX(1620.0);
         insertFileButton.setLayoutY(400.0);
         insertFileButton.setStyle("-fx-font-size: 26px; -fx-font-family: Calibri; -fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
-        insertFileButton.setPrefWidth(200.0);
+        insertFileButton.setPrefWidth(PrefWidth);
         insertFileButton.setOnAction((event) -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select Text File");
@@ -148,7 +134,13 @@ public class TextInput extends Pane {
             }
 
         });
-        this.getChildren().addAll(new Node[]{Logo, exit, classifyButton, scrollPane, insertFileButton, undoButton, homeButton});
+        ImageView background = new ImageView("file:GUI_java/src/GUI/resources/logoUM.png");
+        background.setX(1550);
+        background.setY(1020);
+        background.setPreserveRatio(true);
+        background.setFitHeight(50);
+
+        this.getChildren().addAll(new Node[]{ exit, classifyButton, scrollPane, insertFileButton, background, clearText, homeButton});
     }
 
     private String sendRequest(String urlString, String textInput) {
