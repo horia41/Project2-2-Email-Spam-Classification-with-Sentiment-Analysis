@@ -4,14 +4,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.preprocessing import MinMaxScaler
 import pickle
 from pathlib import Path
 import time
+import scipy.sparse as sp
 
 # Load the processed data with sentiment features
 data_folder = Path(__file__).resolve().parent.parent / 'spambase'
-processed_data_file = data_folder / 'enron_processed_with_sentiment_shifted.data'
-processed_data = pd.read_csv(processed_data_file, header=None, names=['Message', 'sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'Category'])
+processed_data_file = data_folder / 'processed_data_enron_with_sentiment_advanced.data'
+processed_data = pd.read_csv(processed_data_file, header=None, names=['Message', 'sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'text_blob_polarity', 'text_blob_subjectivity', 'Category'])
 
 # Ensure there are no NaN values
 processed_data['Message'] = processed_data['Message'].fillna('')
@@ -22,11 +24,15 @@ processed_data['Category'] = processed_data['Category'].map(label_mapping)
 
 # Separate features and labels
 X_text = processed_data['Message']
-X_sentiment = processed_data[['sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound']]
+X_sentiment = processed_data[['sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'text_blob_polarity', 'text_blob_subjectivity']]
 y = processed_data['Category']
 
+# Scale sentiment features to be non-negative
+scaler = MinMaxScaler()
+X_sentiment_scaled = scaler.fit_transform(X_sentiment)
+
 # Split the dataset into training and testing sets
-X_train_text, X_test_text, X_train_sentiment, X_test_sentiment, y_train, y_test = train_test_split(X_text, X_sentiment, y, test_size=0.3, random_state=42)
+X_train_text, X_test_text, X_train_sentiment, X_test_sentiment, y_train, y_test = train_test_split(X_text, X_sentiment_scaled, y, test_size=0.3, random_state=42)
 
 # Create a TfidfVectorizer and transform the training data
 tfidf_vectorizer = TfidfVectorizer(max_features=5000)
@@ -34,7 +40,6 @@ X_train_text_transformed = tfidf_vectorizer.fit_transform(X_train_text)
 X_test_text_transformed = tfidf_vectorizer.transform(X_test_text)
 
 # Combine text features with sentiment features
-import scipy.sparse as sp
 X_train_transformed = sp.hstack((X_train_text_transformed, X_train_sentiment))
 X_test_transformed = sp.hstack((X_test_text_transformed, X_test_sentiment))
 

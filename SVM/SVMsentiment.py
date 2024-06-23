@@ -8,16 +8,16 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, r
 import pickle
 from pathlib import Path
 import time
-
-# VADER Sentiment Analysis. VADER (Valence Aware Dictionary and sEntiment Reasoner) is a lexicon and rule-based sentiment analysis tool that is specifically attuned to sentiments expressed in social media, and works well on texts from other domains.
+import scipy.sparse as sp
 
 # Load the processed data with sentiment features
 data_folder = Path(__file__).resolve().parent.parent / 'spambase'
-processed_data_file = data_folder / 'enron_processed_with_sentiment_shifted.data'
-processed_data = pd.read_csv(processed_data_file, header=None, names=['Message', 'sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'Category'])
+processed_data_file = data_folder / 'processed_data_enron_with_sentiment_advanced.data'
+processed_data = pd.read_csv(processed_data_file, header=None, names=['Message', 'sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'text_blob_polarity', 'text_blob_subjectivity', 'Category'])
 
-# Ensure there are no NaN values
-processed_data['Message'] = processed_data['Message'].fillna('')
+# Ensure there are no NaN values in the sentiment features and Message
+processed_data['Message'] = processed_data['Message'].fillna('').astype(str)
+processed_data[['sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'text_blob_polarity', 'text_blob_subjectivity']] = processed_data[['sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'text_blob_polarity', 'text_blob_subjectivity']].fillna(0)
 
 # Map 'ham' to 0 and 'spam' to 1 for numerical labels
 label_mapping = {'ham': 0, 'spam': 1}
@@ -25,7 +25,7 @@ processed_data['Category'] = processed_data['Category'].map(label_mapping)
 
 # Separate features and labels
 X_text = processed_data['Message']
-X_sentiment = processed_data[['sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound']]
+X_sentiment = processed_data[['sentiment_neg', 'sentiment_neu', 'sentiment_pos', 'sentiment_compound', 'text_blob_polarity', 'text_blob_subjectivity']]
 y = processed_data['Category']
 
 # Split the dataset into training and testing sets
@@ -37,9 +37,8 @@ X_train_text_transformed = tfidf_vectorizer.fit_transform(X_train_text)
 X_test_text_transformed = tfidf_vectorizer.transform(X_test_text)
 
 # Combine text features with sentiment features
-import scipy.sparse as sp
-X_train_transformed = sp.hstack((X_train_text_transformed, X_train_sentiment))
-X_test_transformed = sp.hstack((X_test_text_transformed, X_test_sentiment))
+X_train_transformed = sp.hstack((X_train_text_transformed, sp.csr_matrix(X_train_sentiment)))
+X_test_transformed = sp.hstack((X_test_text_transformed, sp.csr_matrix(X_test_sentiment)))
 
 # Save the TfidfVectorizer
 model_folder = Path(__file__).resolve().parent.parent / 'Models'
@@ -52,7 +51,7 @@ classifier = SVC(kernel='linear', random_state=42)
 
 # Define parameter grid for GridSearch
 param_grid = {
-    'C': [0.1, 1, 10]
+    'C': [0.1, 1, 10, 100]
 }
 
 # Perform GridSearch to find the best parameters
@@ -77,7 +76,7 @@ y_pred_str = pd.Series(y_pred).map(reverse_label_mapping)
 y_train_str = y_train.map(reverse_label_mapping)
 y_pred_train_str = pd.Series(y_pred_train).map(reverse_label_mapping)
 
-# Calculate metrics for the test set and training set, including accuracy, precision, recall, F1 score, and confusion matrix
+# Calculate metrics for the test set and training set
 accuracy_test = accuracy_score(y_test_str, y_pred_str)
 precision_test = precision_score(y_test_str, y_pred_str, pos_label='spam')
 recall_test = recall_score(y_test_str, y_pred_str, pos_label='spam')
