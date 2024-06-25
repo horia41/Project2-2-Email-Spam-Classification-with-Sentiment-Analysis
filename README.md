@@ -10,3 +10,5 @@ The project uses the Naive Bayes classifier and Support Vector Machines to class
 # To run the code:
 
 Access the folder named 'web_server' and run the app.py file from this folder to start the gateway server for our JavaFX application and then access the folder named 'GUI_java', then subfolder 'src' and run App.java. From this point, our application will start and you will be able to test our service.
+
+NOTE : JavaFX is required in order to be able to run our app. Make sure to have it's library installed before running our code.
